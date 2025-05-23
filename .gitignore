@@ -16,18 +16,34 @@
 /readme.html
 /wp-*.php
 /xmlrpc.php
+.gitignore
+basecamp.code-workspace
+*.DS_Store 
 
 # Configuration
 wp-config.php
 
 # Example themes
 /wp-content/themes/twenty*/
+/wp-content/themes/basecamp/library/
+/wp-content/themes/basecamp/languages/
+/wp-content/themes/basecamp/templates/
+/wp-content/themes/basecamp/not used/
+/wp-content/themes/basecamp/inc/*archive/
+/wp-content/themes/basecamp/inc/examples/
+/wp-content/themes/basecamp/inc/woocommerce/
+
+
 
 # Example plugin
 /wp-content/plugins/hello.php
+/wp-content/plugins/classic-editor/
+
+/wp-content/themes/basecamp/inc/admin/assets/
 
 # Uploads
 /wp-content/uploads/
+/wp-content/mu-pluginsX/
 
 # Log files
 *.log
