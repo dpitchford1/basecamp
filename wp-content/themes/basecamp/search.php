@@ -1,49 +1,33 @@
 <?php get_header(); ?>
 
-			<div id="content">
+<main id="main" class="m-all t-2of3 d-5of7">
 
-				<div id="inner-content" class="wrap">
+    <h1 class="archive-title"><span><?php _e( 'Search Results for:', 'templatetheme' ); ?></span> <?php echo esc_attr(get_search_query()); ?></h1>
 
-					<main id="main" class="m-all t-2of3 d-5of7">
+    <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
 
-						<h1 class="archive-title"><span><?php _e( 'Search Results for:', 'templatetheme' ); ?></span> <?php echo esc_attr(get_search_query()); ?></h1>
+        <article id="post-<?php the_ID(); ?>" <?php post_class(''); ?>>
 
-						<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+            <?php get_template_part( 'templates/header', 'title'); ?>
 
-							<article id="post-<?php the_ID(); ?>" <?php post_class('cf'); ?>>
+            <?php get_template_part( 'templates/byline'); ?>
 
-								<header class="entry-header article-header">
+            <section class="entry-content">
+                
+                <?php get_template_part( 'templates/content', 'excerpt'); ?>
 
-									<?php get_template_part( 'templates/header', 'title'); ?>
+            </section>
 
-                  					<?php get_template_part( 'templates/byline'); ?>
+            <?php get_template_part( 'templates/category-tags'); ?>
 
-								</header>
+        </article>
 
-								<section class="entry-content">
-									
-									<?php get_template_part( 'templates/content', 'excerpt'); ?>
+        <?php get_template_part( 'templates/post-navigation'); ?>
 
-								</section>
+    <?php endwhile; endif; ?>
 
-								<footer class="article-footer">
+</main>
 
-									<?php get_template_part( 'templates/category-tags'); ?>
-
-								</footer> <!-- end article footer -->
-
-							</article>
-
-							<?php get_template_part( 'templates/post-navigation'); ?>
-
-						<?php endwhile; endif; ?>
-
-					</main>
-
-					<?php get_sidebar(); ?>
-
-				</div>
-
-			</div>
+<?php // get_sidebar(); ?>
 
 <?php get_footer(); ?>

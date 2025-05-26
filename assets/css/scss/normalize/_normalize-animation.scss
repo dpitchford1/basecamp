@@ -1,0 +1,30 @@
+/* Animations
+* ========================================================================== */
+
+// Seeing some weird behaviour with this, so commenting out for now
+
+// @media (prefers-reduced-motion) {
+//     *, ::before, ::after {
+//         animation-duration: 0.01ms !important;
+//         animation-iteration-count: 1 !important;
+//         transition-duration: 0.01ms !important;
+//         scroll-behavior: auto !important;
+//         background-attachment: initial; 
+//     }
+// }
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

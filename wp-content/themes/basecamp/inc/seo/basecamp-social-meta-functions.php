@@ -147,6 +147,21 @@ class Basecamp_Social_Meta {
 		echo '<meta property="og:site_name" content="' . esc_attr($site_name) . '">' . PHP_EOL;
 		if (!empty($image)) {
 			echo '<meta property="og:image" content="' . esc_url($image) . '">' . PHP_EOL;
+
+			// Output og:image:width and og:image:height if local image
+			$site_url = site_url();
+			if (strpos($image, $site_url) === 0) {
+				$local_path = str_replace($site_url, ABSPATH, $image);
+				if (file_exists($local_path) && is_readable($local_path)) {
+					$dimensions = getimagesize($local_path);
+					if ($dimensions) {
+						$width = $dimensions[0];
+						$height = $dimensions[1];
+						echo '<meta property="og:image:width" content="' . $width . '">' . PHP_EOL;
+						echo '<meta property="og:image:height" content="' . $height . '">' . PHP_EOL;
+					}
+				}
+			}
 		}
 		echo '<meta name="twitter:card" content="summary_large_image">' . PHP_EOL;
 		echo '<meta name="twitter:title" content="' . esc_attr($title) . '">' . PHP_EOL;
@@ -168,36 +183,10 @@ class Basecamp_Social_Meta {
 
 	/**
 	 * Add width and height attributes to Open Graph images.
+	 * (No longer needed, kept for backward compatibility)
 	 */
 	public static function add_social_image_dimensions() {
-		$html = ob_get_clean();
-		if (strpos($html, 'og:image') !== false) {
-			preg_match_all('/<meta property="og:image" content="([^"]+)">/i', $html, $matches);
-			if (!empty($matches[1])) {
-				foreach ($matches[1] as $image_url) {
-					$site_url = site_url();
-					if (strpos($image_url, $site_url) === 0) {
-						$local_path = str_replace($site_url, ABSPATH, $image_url);
-						if (file_exists($local_path) && is_readable($local_path)) {
-							$dimensions = getimagesize($local_path);
-							if ($dimensions) {
-								$width = $dimensions[0];
-								$height = $dimensions[1];
-								$html = str_replace(
-									'<meta property="og:image" content="' . $image_url . '">',
-									'<meta property="og:image" content="' . $image_url . '">' . PHP_EOL .
-									'<meta property="og:image:width" content="' . $width . '">' . PHP_EOL .
-									'<meta property="og:image:height" content="' . $height . '">',
-									$html
-								);
-							}
-						}
-					}
-				}
-			}
-		}
-		echo $html;
-		ob_start();
+		// No output buffering or manipulation here.
 	}
 
 	/**

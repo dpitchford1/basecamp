@@ -1,0 +1,86 @@
+/* Interactive - Interactive elements. Comment out if not needed.
+* ========================================================================== */
+/*
+* Add the correct styles in Safari.
+*/
+:where(dialog) {
+    --duration: 0.34s;
+  
+    transition: 
+    translate var(--duration) ease-out, 
+    scale var(--duration) ease-out,
+    filter var(--duration) ease-out,
+    display var(--duration) ease-out allow-discrete;
+
+    background-color: #eee;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-inline-size: min(90vw, 60ch);
+    max-block-size: min(80vh, 100%);
+    max-block-size: min(80dvb, 100%);
+    overflow: hidden;
+}
+:where(dialog[open]) {
+    translate: 0 0;
+    scale: 1;
+    filter: blur(0);
+
+    @starting-style {
+        translate: 0 8vh;
+        scale: 1.15;
+        filter: blur(8px);
+    }
+}
+:where(dialog:not([open])) {
+    pointer-events: none;
+    opacity: 0;
+    translate: 0 -8vh;
+    scale: 1.15;
+    filter: blur(8px);
+}
+// optional close button
+// [aria-label="close"] {
+//     appearance: none;
+//     float: right;
+//     border: 1px solid;
+//     border-radius: 50%;
+// }
+dialog :focus {
+    outline: 2px solid #226DAA;
+}
+dialog::backdrop {
+    //background-color: rgba(0, 0, 0, 0.5);
+    transition: backdrop-filter .5s ease;
+}
+html:has(dialog[open]) {
+    overflow: hidden;
+}
+  
+/*
+* Add the correct display in Safari.
+*/
+:where(details) {
+    margin: 0 0 .5rem;
+    padding: 0.5rem 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    p{
+        margin: 0;
+    }
+}
+:where(details > summary:first-of-type) {
+    display: list-item;
+}
+// summary::-webkit-details-marker {
+//     display: none;
+// } 
+:where(summary) {
+    display: list-item;
+    cursor: pointer;
+    font-weight: 300;
+}
+
+[popover] {
+    margin: 0;
+    padding: 0;
+}

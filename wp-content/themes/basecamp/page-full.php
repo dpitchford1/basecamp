@@ -8,19 +8,11 @@
 
 <?php get_header(); ?>
 
-			<div id="content">
+<main id="main" class="m-all t-all d-all" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
 
-				<div id="inner-content" class="wrap">
+    <?php // Edit the loop in /templates/loop. Or roll your own. ?>
+    <?php get_template_part( 'templates/loop'); ?>
 
-						<main id="main" class="m-all t-all d-all" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
-
-							<?php // Edit the loop in /templates/loop. Or roll your own. ?>
-							<?php get_template_part( 'templates/loop'); ?>
-
-						</main>
-
-				</div>
-
-			</div>
+</main>
 
 <?php get_footer(); ?>

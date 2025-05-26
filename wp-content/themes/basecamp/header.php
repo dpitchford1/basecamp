@@ -1,22 +1,29 @@
 <!doctype html>
-<html class="no-js dark" dir="ltr" <?php language_attributes(); ?> <?php Basecamp_Frontend::html_schema(); ?> data-off-canvas="" id="site-body">
+<html class="no-js" dir="ltr" <?php language_attributes(); ?> <?php Basecamp_Frontend::html_schema(); ?> id="site-body">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <?php /* Mobile */ ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<?php /* service worker */ ?>
-<!-- <script>if (navigator && navigator.serviceWorker) { navigator.serviceWorker.register('/worker.min.js'); }</script> -->
+<?php /* service worker - uncomment if using
+<script>if (navigator && navigator.serviceWorker) { navigator.serviceWorker.register('/worker.min.js'); }</script> */ ?>
 <script>var doc = window.document; doc.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'has-js enhanced';</script>
+
+<?php /* inject critical css inline */ ?>
+<?php // Basecamp_Frontend::output_critical_css( get_template_directory() . '/assets/css/build/inline-head.min.css' ); ?>
+
+<?php /* css files */ ?>
+<link rel="stylesheet" href="/assets/css/build/normalize.min.css" media="screen">
+<!-- <link rel="stylesheet" href="/assets/css/build/kaneism-base-layout.min.css" media="screen"> -->
 
 <?php /* favicon */ ?>
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/assets/img/icon/safari-pinned-tab.svg" type="image/svg+xml">
+<!-- <link rel="icon" href="/assets/img/icon/safari-pinned-tab.svg" type="image/svg+xml">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/icon/favicon-16x16.png">
-<link rel="mask-icon" href="/assets/img/icon/safari-pinned-tab.svg" color="#12034a">
+<link rel="mask-icon" href="/assets/img/icon/safari-pinned-tab.svg" color="#12034a"> -->
 <?php /* Theme */ ?>
-<link rel="apple-touch-icon" href="/assets/img/icon/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon/apple-touch-icon.png">
+<!-- <link rel="apple-touch-icon" href="/assets/img/icon/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon/apple-touch-icon.png"> -->
 
 <?php /* APPLE SPECIFIC */ ?>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,12 +36,12 @@
 <?php /* SEARCH AND SEO */ ?>
 <meta name="robots" content="noindex, nofollow, NOODP, noydir">
 <?php if ( is_front_page() ) : ?><link rel="home" title="Home page" href="/"><?php endif ?>
-<?php // Basecamp_Frontend::output_critical_css( get_template_directory() . '/assets/css/critical.min.css' ); ?>
+
 <?php wp_head(); ?>
 
 </head>
 
-	<body <?php body_class(); ?> itemscope itemtype="http://schema.org/WebPage">
+	<body <?php body_class(); ?>>
 
 		<div id="container">
 

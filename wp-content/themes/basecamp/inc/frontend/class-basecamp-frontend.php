@@ -17,7 +17,7 @@ class Basecamp_Frontend {
 		add_filter('nav_menu_link_attributes', [ __CLASS__, 'menu_selected_class' ], 99, 4);
 		add_filter('wp_resource_hints', '__return_empty_array', 99);
 		add_filter('wp_img_tag_add_auto_sizes', '__return_false');
-		add_filter('wp_speculation_rules_configuration', '__return_null');
+		//add_filter('wp_speculation_rules_configuration', '__return_null');
 		add_filter('is_active_sidebar', [ __CLASS__, 'remove_sidebar' ], 10, 2);
 
 		// Social icons in menu (Basecamp SVG system)
@@ -46,6 +46,7 @@ class Basecamp_Frontend {
 	/**
 	 * Add schema.org markup to the html tag.
 	 */
+    // usage: Basecamp_Frontend::html_schema(); within the php tag
 	public static function html_schema() {
 		$schema = 'http://schema.org/';
 		if ( is_single() ) {
@@ -63,6 +64,7 @@ class Basecamp_Frontend {
 	/**
 	 * Gets a nicely formatted string for the published date.
 	 */
+    // usage: <span class="posted-on">' . Basecamp_Frontend::template_time_link() . '</span>
 	public static function template_time_link() {
 		$time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s</time>';
 		$time_string = sprintf(

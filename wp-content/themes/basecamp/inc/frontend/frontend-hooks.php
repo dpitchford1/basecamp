@@ -15,7 +15,7 @@ add_filter( 'wp_resource_hints', '__return_empty_array', 99 );
 add_filter('wp_img_tag_add_auto_sizes', '__return_false');
 
 // Disable speculative loading completely.
-add_filter( 'wp_speculation_rules_configuration', '__return_null' );
+// add_filter( 'wp_speculation_rules_configuration', '__return_null' );
 
 // Remove the sidebar from the main query.
 function mb_remove_sidebar() { return false; }

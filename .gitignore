@@ -18,7 +18,8 @@
 /xmlrpc.php
 .gitignore
 basecamp.code-workspace
-*.DS_Store 
+*.DS_Store
+.gitignore
 
 # Configuration
 wp-config.php
@@ -38,6 +39,10 @@ wp-config.php
 # Example plugin
 /wp-content/plugins/hello.php
 /wp-content/plugins/classic-editor/
+/wp-content/plugins/media-library-plus/
+/wp-content/plugins/menus/
+/wp-content/plugins/cookies-and-content-security-policy/
+/wp-content/plugins/faqs/
 
 /wp-content/themes/basecamp/inc/admin/assets/
 

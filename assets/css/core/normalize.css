@@ -1,0 +1,581 @@
+@charset "UTF-8";
+/* 
+
+    The content of this file gets exported to critical css function, which gets minified and included inline in the head - found in header.php
+
+*/
+/* 1.2 Browser setup / nomalize
+====================================================================== */
+/* Document - Normalize Base
+* ========================================================================== */
+/**
+* Normalize structure utilizes :where(){} to group selectors and reduce specificity.
+* This is an opinionated approach to CSS normalization, aiming for a clean and maintainable base.
+* The use of :where(){} allows for easier overrides and a more consistent styling approach.
+* You will find you will no longer need !important. If you do, you have funcdamentally broken the internet. Goog job.
+* 
+*/
+/**
+* Call the fonts early mang (opinionated) - but based on experience.
+* Host them yo' damn self, preload and cache them with a service worker.
+*/
+/* body font */
+@font-face {
+  font-family: "primary";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/fonts/proxima-reg.woff") format("woff");
+  font-display: swap;
+}
+/* headings */
+@font-face {
+  font-family: "secondary";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/fonts/proxima-light.woff2") format("woff2");
+  font-display: swap;
+}
+/**
+* Call them and instantiate early.
+*/
+:where(:root) {
+  font-family: "primary", Verdana, "Helvetica Neue", Arial, sans-serif;
+}
+
+/** HEADINGS - adjust which go where according to project specific html outline **/
+:where(h1, h2, h3) {
+  font-family: "secondary", "Helvetica", Arial, sans-serif;
+}
+
+:where(h4, h5, h6) {
+  font-weight: normal;
+}
+
+/* Root the things
+---------------------------------------------- */
+:where(:root) {
+  overflow-wrap: break-word;
+  text-rendering: optimizeLegibility;
+  box-sizing: border-box;
+}
+
+:where(html) {
+  -webkit-overflow-scrolling: touch;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+     tab-size: 4;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-smooth: always;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  min-height: 100vh;
+}
+
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+/**
+* 1. Add border box sizing in all browsers (opinionated).
+* 2. Backgrounds do not repeat by default (opinionated).
+*/
+*,
+::before,
+::after {
+  box-sizing: inherit; /* 1 */
+  background-repeat: no-repeat; /* 2 */
+  text-decoration: none; /* 1 */
+}
+
+/* 1.1 Browser and Document setup / nomalize */
+:where(body) {
+  min-height: 100%;
+  padding: 0 5%;
+  position: relative;
+  z-index: 0; /* doesn't hurt to set this */
+}
+
+/* Html structure
+---------------------------------------------- */
+:where(iframe, article, aside, figure, footer, header, nav, section, form, fieldset, legend) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(main, details) {
+  display: block;
+}
+
+/* 1.4 General Typography - Headings - Links
+====================================================================== */
+/* General Typography */
+:where(body, h4, h5, h6) {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/** HEADINGS **/
+:where(h1, h2, h3, h4, h5, h6) {
+  margin: 0 0 1.2vh 0;
+  text-wrap: balance;
+}
+
+/**
+* Correct the font size and margin on `h1` elements within `section` and
+* `article` contexts in Chrome, Edge, Firefox, and Safari.
+*/
+:where(h1) {
+  font-size: 2em;
+}
+
+/* Links
+---------------------------------------------- */
+:where(a) {
+  background: transparent;
+  text-decoration: underline;
+}
+
+:where(a:hover) {
+  outline: none;
+  text-decoration: none;
+}
+
+:where(a:focus) {
+  text-decoration: underline;
+  outline: none;
+}
+
+:where(a:active) {
+  color: inherit;
+  background-color: transparent;
+  outline: none;
+}
+
+/** HEADING LINKS **/
+:where(h1 a, h2 a, h3 a, h4 a, h5 a, h6 a) {
+  text-decoration: none;
+  display: inline-block;
+}
+
+:where(h1 a:hover, h1 a:focus, h2 a:hover, h2 a:focus, h3 a:hover, h3 a:focus, h4 a:hover, h4 a:focus, h5 a:hover, h5 a:focus, h6 a:hover, h6 a:focus) {
+  text-decoration: underline;
+}
+
+/* Cursors 
+---------------------------------------------- */
+:where(a, label, select, .pointer, button, [type=button], [type=reset], [type=color], [type=submit], [type=file], [type=date], [type=time], [type=checkbox], [type=radio], [type=range], [role=button], .submit) {
+  cursor: pointer;
+}
+
+/**
+* 1. Correct the inheritance of border color in Firefox.
+* 2. Add the correct box sizing in Firefox.
+*/
+:where(hr) {
+  color: inherit; /* 1 */
+  height: 0; /* 2 */
+  margin: 1.5vh 0;
+  border: 0;
+  border-top: 1px solid;
+  clear: both;
+  overflow: hidden;
+}
+
+/** GENERAL **/
+:where(p):not(details p) {
+  margin: 0 0 2.5vh;
+  word-spacing: 0.3ch;
+}
+
+/**
+* Add the correct font weight in Chrome, Edge, and Safari.
+*/
+:where(b, strong, legend) {
+  font-weight: bolder;
+}
+
+:where(em, i, dfn, cite, caption, q) {
+  font-style: italic;
+}
+
+/* shared type styles */
+:where(q) {
+  quotes: "“" "”" "‘" "’";
+}
+
+/* blockquotes */
+:where(blockquote) {
+  line-height: 1.3;
+  margin: 0 0 0.2rem;
+  padding: 0 2rem 0.2rem 0;
+}
+
+:where(blockquote p) {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+}
+
+/* :where(){} */
+:where(address) {
+  margin-bottom: 1rem;
+  font-style: normal;
+  line-height: inherit;
+}
+
+/**
+* Add the correct font size in all browsers.
+*/
+:where(small, sup, sub) {
+  font-size: 80%;
+}
+
+:where(sup, sub) {
+  font-size: 80%;
+  line-height: 0;
+}
+
+:where(sup) {
+  vertical-align: super;
+}
+
+:where(sub) {
+  vertical-align: sub;
+}
+
+:where(abbr, acronym) {
+  font-size: 85%;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+/**
+* Add the correct text decoration in Safari.
+*/
+:where(abbr[title], acronym[title], dfn[title]) {
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+  cursor: help;
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+}
+
+:where(mark) {
+  background: none;
+}
+
+/* Images, Media & Embedded content
+========================================================================== */
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+:where(img) {
+  color: inherit;
+  border-style: none;
+  border: 0;
+  height: auto;
+}
+
+:where(figure) {
+  margin: 0 0 0.625rem;
+  padding: 0;
+}
+
+:where(figcaption) {
+  font-weight: normal;
+  color: inherit;
+}
+
+:where(video) {
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+* Change the alignment on media elements in all browsers (opinionated).
+*/
+:where(audio, canvas, iframe, img, svg, video) {
+  vertical-align: middle;
+}
+
+audio, canvas, video, progress {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+
+[hidden], template {
+  display: none;
+}
+
+/**
+* Remove the border on iframes in all browsers (opinionated).
+*/
+:where(iframe) {
+  border-style: none;
+}
+
+/**
+* Change the fill color to match the text color in all browsers (opinionated).
+*/
+:where(svg:not([fill])) {
+  fill: currentColor;
+}
+
+/* Tabular data
+* ========================================================================== */
+/**
+* 1. Collapse border spacing in all browsers (opinionated).
+* 2. Correct table border color in Chrome, Edge, and Safari.
+* 3. Remove text indentation from table contents in Chrome, Edge, and Safari.
+*/
+:where(table) {
+  border-collapse: collapse; /* 1 */
+  border-color: currentColor; /* 2 */
+  text-indent: 0; /* 3 */
+  table-layout: fixed;
+  caption-side: bottom;
+  width: 100%;
+}
+
+:where(th) {
+  font-weight: 600;
+  font-family: "primary", "Helvetica", Arial, sans-serif;
+  padding: 0.3rem;
+  text-align: -webkit-match-parent;
+  text-align: match-parent;
+  text-align: inherit;
+  background-color: #ddd;
+}
+
+:where(th summary) {
+  margin: 0 0 0.625rem 0;
+  font-weight: normal;
+}
+
+:where(td) {
+  padding: 0.5rem 0.3rem;
+}
+
+:where(thead, tbody, tfoot, tr, td, th) {
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0;
+  vertical-align: middle;
+  text-align: left;
+}
+
+:where(caption) {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: currentColor;
+  text-align: left;
+}
+
+/* Forms - Comment out if not using forms.
+* ========================================================================== */
+.form--row {
+  margin-bottom: 3vh;
+}
+.form--row p {
+  margin-bottom: 0.3rem;
+}
+
+/* Form structure
+---------------------------------------------- */
+:where(form) {
+  margin-bottom: 2vh;
+}
+
+/**
+* Correct the padding in Firefox.
+*/
+:where(fieldset) {
+  padding: 0.5rem 0.75rem;
+}
+
+:where(legend, label) {
+  color: inherit;
+  font-family: inherit;
+}
+
+:where(label) {
+  margin-right: 1rem;
+}
+
+/**
+* 1. Correct the text wrapping in Edge and IE.
+*/
+:where(legend) {
+  box-sizing: border-box; /* 1 */
+  display: table; /* 1 */
+  max-width: 100%; /* 1 */
+  white-space: normal; /* 1 */
+}
+
+/* Form elements
+---------------------------------------------- */
+:where(input) {
+  border-radius: 0;
+  padding: 0.3rem;
+}
+
+/**
+* Show the overflow in IE.
+* 1. Show the overflow in Edge.
+*/
+:where(button, input) { /* 1 */
+  overflow: visible;
+}
+
+/**
+* Remove the inheritance of text transform in Edge, Firefox, and IE.
+* 1. Remove the inheritance of text transform in Firefox.
+*/
+:where(button, select) { /* 1 */
+  text-transform: none;
+}
+
+:where([type=text], [type=button], [type=search], [type=password], [type=number], [type=url], [type=email], [type=tel], [type=date], [type=time], [type=month], [type=week], select, optgroup, textarea) {
+  font-family: "primary", "Helvetica", Arial, sans-serif;
+  border: 1px solid rebeccapurple;
+  outline: 1px solid transparent;
+  color: currentColor;
+  font-size: 100%;
+  line-height: 1.33;
+}
+
+:where(input, optgroup, select, textarea) {
+  background-color: #eee;
+}
+
+:where(button:focus, .button.alt:focus, input:focus, textarea:focus, select:focus, optgroup:focus, [type=checkbox]:focus, [type=radio]:focus) {
+  box-shadow: inset 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+  border-color: lime;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+button,
+[type=button],
+[type=reset],
+[type=submit] {
+  -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+button::-moz-focus-inner, [type=button]::-moz-focus-inner, [type=reset]::-moz-focus-inner, [type=submit]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+button:-moz-focusring, [type=button]:-moz-focusring, [type=reset]:-moz-focusring, [type=submit]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+textarea {
+  overflow: auto;
+  resize: vertical; /* Specify textarea resizability */
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+[type=checkbox],
+[type=radio] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+[type=number]::-webkit-inner-spin-button,
+[type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+[type=search] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/* PLACEHOLDER STYLING
+---------------------------------------------- */
+input:focus::-moz-placeholder {
+  opacity: 0.2;
+}
+
+input:focus::placeholder {
+  opacity: 0.2;
+}
+
+/* Form errors
+---------------------------------------------- */
+:where(input:invalid, textarea:invalid, [aria-invalid=true], .required) {
+  border-color: red;
+}
+
+:where(.required) {
+  color: red;
+}
+
+/* 1.4 General Typography & Headings
+====================================================================== */
+/* 1.6 Links & Cursors
+====================================================================== */
+/* 1.9 Lists & Tables
+====================================================================== */
+/* 1.7 Images, Media & Embedded content 
+====================================================================== */
+/* 1.8 Global Forms Normalize
+====================================================================== */
+/* 1.8 Global Forms Normalize
+====================================================================== */
+/* 1.8 Global Forms Normalize
+====================================================================== */

@@ -1,54 +1,38 @@
 <?php get_header(); ?>
 
-			<div id="content">
+<main id="main" class="m-all t-all d-all" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
 
-				<div id="inner-content" class="wrap">
+    <section class="entry-content">
 
-					<main id="main" class="m-all t-all d-all" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
+        <?php get_template_part( 'templates/header', 'title'); ?>
 
-						<article id="post-not-found" class="hentry">
+        <article id="post-not-found" class="hentry">
 
-							<header class="article-header">
+            <div class="hal">
 
-								<?php get_template_part( 'templates/header', 'title'); ?>
+                <img src="<?php echo get_template_directory_uri(); ?>/library/images/hal.png" alt="HAL 9000">
 
-							</header>
+                <div class="circle"></div>
 
-							<section class="entry-content">
+            </div>
 
-								<div class="hal">
+            <div class="404-txt">
 
-									<img src="<?php echo get_template_directory_uri(); ?>/library/images/hal.png" alt="HAL 9000">
+                <h3><?php _e( 'I\'m sorry Dave, I\'m afraid I can\'t do that.', 'templatetheme' ); ?></h3>
+                <p>We couldn't find what you are looking for, please try searching.</p>
 
-									<div class="circle"></div>
+            </div>
 
-								</div>
+        </article>
 
-								<div class="404-txt">
+        <section class="search">
 
-									<h3><?php _e( 'I\'m sorry Dave, I\'m afraid I can\'t do that.', 'templatetheme' ); ?></h3>
-									<p>We couldn't find what you are looking for, please try searching.</p>
+                <p><?php get_search_form(); ?></p>
 
-								</div>
+        </section>
 
-							</section>
+    </section>
 
-							<section class="search">
-
-									<p><?php get_search_form(); ?></p>
-
-							</section>
-
-							<footer class="article-footer">
-
-							</footer>
-
-						</article>
-
-					</main>
-
-				</div>
-
-			</div>
+</main>
 
 <?php get_footer(); ?>

@@ -1,0 +1,102 @@
+/* Utilities
+* ========================================================================== */
+/* Globals */
+
+/* Clear fix */
+.cf:before, .cf:after   { content:""; display:table; }
+.cf:after               { clear:both; }
+
+// flex center it
+.flex--centered {
+    display: flex;
+    justify-content: center;  
+    align-items: center; 
+}
+// grid center it
+.grid--centered {
+    display: grid;
+    justify-content: center; 
+    align-content: center;   
+}
+.is--centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);  
+}
+.text--centered {
+    text-align: center;  
+}
+
+/**
+* Layout
+*/
+
+// flex it
+.is--flex {
+    display: flex;
+}
+// block it
+.is--block {
+    display: block;
+}
+.is--inline-block {
+    display: inline-block;
+}
+.is--inline {
+    display: inline;
+}
+
+/**
+* Visibility
+*/
+.is--hidden {
+    display: none;
+}
+.is--visible {
+    display: block;
+}
+
+/**
+* Boxy
+*/
+.no--margin {
+    margin: 0;
+}
+.no--padding {
+    padding: 0;
+}
+.no--border {
+    border: none;
+}
+.no--outline {
+    outline: none;
+}
+.no--background {
+    background: none;
+}
+
+/**
+* Text, copy, content
+*/
+.is--truncated{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+// p {
+//     display: -webkit-box;
+//     -webkit-line-clamp: 3; 
+//     -webkit-box-orient: vertical;  
+//     overflow: hidden;
+//   }
+
+
+/* Reversed anchors - underlines -- anchors you want no underline, hover underline e.g. subnav */
+:where(.ra a) {
+    text-decoration: none;
+  }
+  
+  :where(.ra a:hover) {
+    text-decoration: underline;
+  }

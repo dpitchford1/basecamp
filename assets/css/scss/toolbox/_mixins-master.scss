@@ -1,0 +1,43 @@
+// Clearfix
+@mixin clearfix() {
+	content: "";
+	display: table;
+	table-layout: fixed;
+}
+
+// Clear after (not all clearfix need this also)
+@mixin clearfix-after() {
+	clear: both;
+}
+
+//////////////////////////////
+
+@mixin theme() {
+  @each $theme, $map in $themes {
+    $theme-map: $map !global;
+    .#{$theme} & {
+      @content;
+    }
+  }
+  $theme-map: null !global;
+}
+
+@function theme-get($key) {
+  @return map-get($theme-map, $key);
+}
+
+/////////////////////////////
+
+// font theme function
+@function text-scale($level) {
+  @return map-get(map-get($text-settings, $level), 'font-size');
+}
+
+@function line-height($level) {
+  @return map-get(map-get($text-settings, $level), 'line-height');
+}
+
+@mixin text-setting($level) {
+  font-size: text-scale($level);
+  line-height: line-height($level);
+}
