@@ -20,6 +20,7 @@
 basecamp.code-workspace
 *.DS_Store
 .gitignore
+.vscode/
 
 # Configuration
 wp-config.php
@@ -28,7 +29,7 @@ wp-config.php
 /wp-content/themes/twenty*/
 /wp-content/themes/basecamp/library/
 /wp-content/themes/basecamp/languages/
-/wp-content/themes/basecamp/templates/
+#/wp-content/themes/basecamp/templates/
 /wp-content/themes/basecamp/not used/
 /wp-content/themes/basecamp/inc/*archive/
 /wp-content/themes/basecamp/inc/examples/
@@ -43,6 +44,7 @@ wp-config.php
 /wp-content/plugins/menus/
 /wp-content/plugins/cookies-and-content-security-policy/
 /wp-content/plugins/faqs/
+/wp-content/plugins/wp-sweep/
 
 /wp-content/themes/basecamp/inc/admin/assets/
 
