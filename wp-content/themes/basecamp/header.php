@@ -69,14 +69,14 @@
                 <?php // You can use text or a logo (or both) in your header. Uncomment the below to use text. ?>
                 <!-- <div id="site-title" class="h1"><a href="<?php echo home_url(); ?>" rel="nofollow"><?php bloginfo('name'); ?></a></div> -->
 
-                <div id="logo" itemscope itemtype="http://schema.org/Organization"><a href="<?php echo home_url(); ?>" rel="nofollow"><img src="<?php echo get_template_directory_uri(); ?>/library/images/template_logo.png" /></a></div>
+                <div id="logo" itemscope itemtype="http://schema.org/Organization"><a href="<?php echo home_url(); ?>" rel="nofollow"><img src="<?php echo get_template_directory_uri(); ?>/library/images/basecamp_logo.png" /></a></div>
 
                 <nav class="header-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
                 <?php // see all default args here: https://developer.wordpress.org/reference/functions/wp_nav_menu/ ?>
                     <?php wp_nav_menu(array(
                                 'container' => false,                           // remove nav container
                                 'container_class' => 'menu',                 // class of container (should you choose to use it)
-                                'menu' => __( 'The Main Menu', 'templatetheme' ),  // nav name
+                                'menu' => __( 'The Main Menu', 'basecamp' ),  // nav name
                                 'menu_class' => 'nav top-nav main-menu',               // adding custom nav class
                                 'theme_location' => 'main-nav',                 // where it's located in the theme
                     )); ?>

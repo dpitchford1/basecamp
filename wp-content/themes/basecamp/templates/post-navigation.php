@@ -1,5 +1,5 @@
 <div class="post-navigation">
 
-	<?php template_page_navi(); ?>
+	<?php Basecamp_Frontend::page_navi(); ?>
 
 </div>

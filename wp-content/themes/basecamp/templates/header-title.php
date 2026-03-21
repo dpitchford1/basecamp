@@ -2,7 +2,7 @@
 
 if ( function_exists('is_tag') && is_tag() || is_category() || is_tax() ) { ?>
 
-	<h1 class="archive-title h2"><span><?php _e( 'Posts Categorized:', 'templatetheme' ); ?></span> <?php single_cat_title(); ?></h1>
+	<h1 class="archive-title h2"><span><?php _e( 'Posts Categorized:', 'basecamp' ); ?></span> <?php single_cat_title(); ?></h1>
 
 <?php } elseif ( is_archive() ) { ?>
 
@@ -23,7 +23,7 @@ if ( function_exists('is_tag') && is_tag() || is_category() || is_tax() ) { ?>
 
 <?php } elseif ( is_404() ) { ?>
 
-	<h1><?php _e( '404', 'templatetheme' ); ?></h1>
+	<h1><?php _e( '404', 'basecamp' ); ?></h1>
 
 <?php } elseif ( is_home() ) { ?>
 

@@ -157,7 +157,7 @@ class Basecamp_Frontend {
 	 */
 	public static function basecamp_nav_menu_social_icons( $item_output, $item, $depth, $args ) {
 		if ( 'social' === $args->theme_location ) {
-			$svg = \Basecamp_SVG_Icons::get_social_link_svg( $item->url );
+			$svg = \Basecamp_SVG_Icons::get_social_link_svg( $item->url, 24 );
 			if ( empty( $svg ) && function_exists( 'basecamp_get_theme_svg' ) ) {
 				$svg = \basecamp_get_theme_svg( 'link' );
 			}
@@ -197,7 +197,7 @@ class Basecamp_Frontend {
 		$links = paginate_links( $paginate_args );
 		if ( $links ) {
 			echo '<nav class="paged--pagination" aria-label="' . esc_attr__( 'Pagination', 'basecamp' ) . '">';
-			echo $links;
+			echo wp_kses_post( $links );
 			echo '</nav>';
 		}
 	}
@@ -226,9 +226,7 @@ class Basecamp_Frontend {
 			return;
 		}
 
-		$query_args = wp_parse_args( [
-			'tag__in' => $tags,
-		], $default_args, $args );
+		$query_args = wp_parse_args( $args, array_merge( $default_args, [ 'tag__in' => $tags ] ) );
 
 		$related_query = new WP_Query( $query_args );
 
@@ -245,5 +243,129 @@ class Basecamp_Frontend {
 		echo '</ul>';
 
 		wp_reset_postdata();
+	}
+
+	/**
+	 * Output a <picture> element that serves a portrait crop on mobile and
+	 * a full responsive landscape <img> on wider viewports.
+	 *
+	 * The landscape fallback is generated via wp_get_attachment_image(), so the
+	 * browser receives the full WP-generated srcset along with automatic WebP
+	 * substitution, width/height attributes, and lazy-loading — no extra work needed.
+	 *
+	 * Usage:
+	 *   Basecamp_Frontend::picture( get_post_thumbnail_id(), [
+	 *       'class'         => 'hero__picture',
+	 *       'img_class'     => 'hero__img',
+	 *       'loading'       => 'eager',
+	 *       'fetchpriority' => 'high',
+	 *   ] );
+	 *
+	 * Skip the portrait <source> entirely (landscape-only content):
+	 *   Basecamp_Frontend::picture( $id, [ 'portrait_size' => false ] );
+	 *
+	 * @param int   $attachment_id Attachment/image ID.
+	 * @param array $args {
+	 *   Optional overrides.
+	 *   @type string|false $portrait_size   Size handle for the portrait <source> URL, or false to skip. Default 'portait-m'.
+	 *   @type string       $portrait_break  max-width at which portrait is served. Default '600px'.
+	 *   @type string       $landscape_size  Size handle passed to wp_get_attachment_image(). Default 'basecamp-img-xl'.
+	 *   @type string|null  $alt             Alt text. Null (default) uses the attachment's own alt field.
+	 *   @type string       $class           Class on the <picture> element. Default ''.
+	 *   @type string       $img_class       Class on the <img> inside the picture. Default ''.
+	 *   @type string       $loading         loading attribute: 'lazy' or 'eager'. Default 'lazy'.
+	 *   @type string|false $fetchpriority   fetchpriority attribute: 'high', 'low', or false to omit. Default false.
+	 * }
+	 * Width/height and decoding="async" are always output — no args needed.
+	 */
+	public static function picture( int $attachment_id, array $args = [] ): void {
+		$defaults = [
+			'portrait_size'  => 'portait-m',
+			'portrait_break' => '600px',
+			'landscape_size' => 'basecamp-img-xl',
+			'alt'            => null,
+			'class'          => '',
+			'img_class'      => '',
+			'loading'        => 'lazy',
+			'fetchpriority'  => false,
+		];
+
+		$args = wp_parse_args( $args, $defaults );
+
+		if ( ! $attachment_id ) {
+			return;
+		}
+
+		// Build attrs array for wp_get_attachment_image() — it handles srcset,
+		// WebP substitution, width/height, and all standard img attributes.
+		$img_attrs = [
+			'loading'  => $args['loading'],
+			'decoding' => 'async',
+		];
+		if ( $args['img_class'] ) {
+			$img_attrs['class'] = $args['img_class'];
+		}
+		if ( $args['fetchpriority'] ) {
+			$img_attrs['fetchpriority'] = $args['fetchpriority'];
+		}
+		// Only override alt if caller passed a value; null defers to attachment meta.
+		if ( null !== $args['alt'] ) {
+			$img_attrs['alt'] = $args['alt'];
+		}
+
+		$landscape_img = wp_get_attachment_image( $attachment_id, $args['landscape_size'], false, $img_attrs );
+
+		// Portrait <source> uses a single URL (one mobile-optimised crop, no srcset).
+		$portrait_url = '';
+		if ( $args['portrait_size'] ) {
+			$portrait_src = wp_get_attachment_image_src( $attachment_id, $args['portrait_size'] );
+			$portrait_url = $portrait_src ? esc_url( $portrait_src[0] ) : '';
+		}
+
+		if ( ! $landscape_img && ! $portrait_url ) {
+			return;
+		}
+
+		$picture_class = $args['class'] ? ' class="' . esc_attr( $args['class'] ) . '"' : '';
+
+		echo '<picture' . $picture_class . '>';
+
+		// Portrait <source> — single URL, browser switches at the breakpoint.
+		if ( $portrait_url ) {
+			echo '<source'
+				. ' srcset="' . $portrait_url . '"'
+				. ' media="(max-width: ' . esc_attr( $args['portrait_break'] ) . ')"'
+				. '>';
+		}
+
+		// Landscape <img> — wp_get_attachment_image() provides full srcset,
+		// WebP, width/height, and all loading attributes automatically.
+		echo $landscape_img;
+
+		echo '</picture>';
+	}
+
+	/**
+	 * Build a srcset string from an array of registered image size handles.
+	 * URLs are passed through wp_get_attachment_image_src(), so the WebP
+	 * filter applies automatically — no manual substitution needed.
+	 *
+	 * Note: picture() no longer calls this — wp_get_attachment_image() generates
+	 * the landscape srcset automatically. Keep for custom markup that needs a
+	 * hand-built srcset string.
+	 *
+	 * @param int      $attachment_id Attachment ID.
+	 * @param string[] $sizes         Array of registered size handles.
+	 * @return string Comma-separated srcset value, or empty string.
+	 */
+	protected static function build_srcset( int $attachment_id, array $sizes ): string {
+		$parts = [];
+		foreach ( $sizes as $size ) {
+			$src = wp_get_attachment_image_src( $attachment_id, $size );
+			if ( $src && ! empty( $src[0] ) && ! empty( $src[1] ) ) {
+				$parts[] = esc_url( $src[0] ) . ' ' . (int) $src[1] . 'w';
+			}
+		}
+		return implode( ', ', $parts );
 	}
 }

@@ -1,76 +1,222 @@
 # Basecamp
-https://github.com/joshuaiz/template/
 
-https://studio.bio/themes/template/
+A performance-focused, modular WordPress starter theme for developers.
 
-## An HTML5, lightweight, responsive, retina-ready starter WordPress theme for developers.
+Basecamp ships with a comprehensive PHP module system, no-plugin SEO, automatic WebP conversion, responsive image helpers, and a Dart Sass CSS pipeline — everything you need to start a production project without ripping out framework opinions.
 
-While Basecamp *is* stripped-down, it is meant to have some useful defaults so you can start developing right away. Whatever you don't need or want, change it, comment it out or delete it.
+---
 
-What Basecamp is *not* is a completely bare-bones theme. If you're looking for that, we've got you covered! Check out Plate — our completely stripped-down version of Basecamp. https://studio.bio/themes/plate
+## Requirements
 
-Basecamp is based on the amazing Bones starter theme by Eddie Machado: http://themble.com/bones.
+- WordPress 6.4+
+- PHP 7.4+ (8.x recommended)
+- [Live Sass Compiler](https://marketplace.visualstudio.com/items?itemName=glenn2223.live-sass) (VS Code) — or any Dart Sass compiler
 
-If you're not familiar with Bones, I highly suggest you check it out before using Basecamp. Bones is exquisitely commented and meant to be a learning tool.
+---
 
-I make no Bones (pun definitely intended) about Basecamp copying a lot of what was included in Bones but wanted to customize it for my studio's workflow. This may or may not work for you.
+## Install
 
-With that in mind, we've removed some things I never used in Bones (like Link Pages, tags on pages and IE8 grids amongst others) and added some things in that we use often: more page templates, updated default font stack, a custom post type plugin template, and some custom functions.
+```bash
+# In your WordPress themes directory
+git clone https://github.com/your-org/basecamp.git
+wp theme activate basecamp
+```
 
-We've also included some extras and goodies that developers may find useful but kept those out of the main files.
+Or download as a ZIP and upload via **Appearance → Themes → Add New → Upload Theme**.
 
-Edit this, fork it, change it, delete it - whatever. As Eddie might say: it's your world. But I hope you make something cool with it.
+---
 
-## A Little History
-My introduction to Bones came five years ago after trying out just about every starter theme out there. Once I found Bones I was hooked and have used it ever since on hundreds of projects. Bones got me to use Sass/SCSS, taught me a ton about WordPress, how themes *really* work, and made me a better developer.
+## Environment Setup
 
-Yet, over time I found I was making the same changes to Bones at the start of every project and this was taking up valuable time. Thus, I created the predecessor to this theme called 'Osseous' which included some of the changes found in Basecamp. Osseous literally means: 'of, relating to, or composed of bone' and was a good departure point.
+Copy `wp-config-sample.php` to `wp-config.php` and set the environment variable before starting:
 
-Basecamp picks up where Osseous left off and takes things a bit further with 'Basecamp'. It includes namespaced functions and customized defaults along with a lot of other stuff I like and use for my development. Your mileage may vary.
+```bash
+export BASECAMP_ENV=local   # local | staging | production (default)
+```
 
-2017 Update: we've gone through and done a major rewrite, adding and updating the following:
-- WordPress Customizer support
-- WooCommerce support
-- updated body class function
-- expanded Quicktags
-- template part library (really cool)
-- updated comments
-- cleaned up header.php
-- admin and login page updates
-- updated media query .scss stylesheets
-- removed @2x and ie_grid (who uses those?)
-- HTML schema support
-- updated css reset
-- default .scss classes
+Debug constants, `DISALLOW_FILE_MODS`, `FORCE_SSL_ADMIN`, and cron settings are all driven by this single variable.
 
-...and much, much more.
+---
 
-This is the beginning for Basecamp so we welcome improvements, comments, criticism and general feedback. I've probably made a ton of mistakes so as with anything open source, it is a work in progress.
+## Module System
 
-## Recommended Plugins
-Some of the stuff in Basecamp references plugins that I use with just about every site and I recommend:
-- Advanced Custom Fields (Pro): https://www.advancedcustomfields.com. A must-have.
-- WP Retina 2x: https://wordpress.org/plugins/wp-retina-2x/. Works with WP built-in retina support. Just install and forget it.
-- EWWW Image Optimizer: https://wordpress.org/plugins/ewww-image-optimizer/. Smush all of the images. Automagically.
-- Plugin Organizer: https://wordpress.org/plugins/plugin-organizer/. Selective plugin loading on a per-page, per-post and per-type basis. Word.
-- WP Migrate DB Pro: https://deliciousbrains.com/wp-migrate-db-pro/. Indispensable tool if you work on sites locally (and you should).
+Every feature is a self-contained file loaded via `require_once` in `functions.php`. Enable or disable any module by commenting its load line in and out — nothing else needs to change.
 
+```php
+// functions.php — example toggles
+require_once __DIR__ . '/inc/frontend/class-basecamp-frontend.php'; // always on
+// require_once __DIR__ . '/inc/woocommerce/woocommerce-functions.php'; // uncomment when WooCommerce is active
+// require_once __DIR__ . '/inc/theme-functions/basecamp-cpt-scaffold.php'; // uncomment when using custom post types
+```
 
-## Other stuffs
-Designed by Joshua Michaels for studio.bio: http://studio.bio/themes/template
+Modules are grouped in `functions.php` by area:
 
-With help from @joniler.
+| Group | Path |
+|---|---|
+| Frontend helpers | `inc/frontend/` |
+| Admin customisations | `inc/admin/` |
+| SEO (titles, meta, social) | `inc/seo/` |
+| REST API endpoints | `inc/rest/` |
+| Scheduled events (cron) | `inc/core/` |
+| Development tools | `inc/development/` |
+| WooCommerce | `inc/woocommerce/` |
+| Custom post types | `inc/theme-functions/` |
 
-License: WTFPL
-License URI: http://sam.zoy.org/wtfpl/
+---
 
-Do whatever you want. Freedom, baby.
+## Directory Structure
 
-#### Special Thanks to:
-@eddiemachado — all credit is due to him and the original Bones collaborators: Paul Irish, Yoast, Andrew Rogers, David Dellanave and others.
+```
+basecamp/
+  functions.php               Bootstrap — all require_once calls live here
+  inc/
+    class-basecamp.php         Theme setup, image sizes, menus, body classes
+    frontend/
+      class-basecamp-frontend.php   picture(), page_navi(), related_posts(), etc.
+      class-basecamp-svg-icons.php  Centralised SVG icon registry
+      remove-bloat.php              Strips unused WordPress default output
+    seo/
+      basecamp-title-functions.php  Context-aware <title> via extension classes
+      basecamp-meta-description-functions.php
+      basecamp-social-meta-functions.php   Open Graph + Twitter Card
+    admin/
+      class-basecamp-admin.php      Login branding, dashboard, editor tweaks
+      basecamp-admin-helpers.php    Sanitisers, Customizer helpers
+    img-optimization/
+      basecamp-webp-functions.php   Frontend WebP URL substitution
+      basecamp-webp-conversion.php  Upload-time JPEG/PNG → WebP conversion
+    core/
+      basecamp-scheduled-events.php  Cron intervals, scheduling, callbacks
+    rest/
+      basecamp-rest-endpoints.php    REST routes under basecamp/v1
+    woocommerce/
+      woocommerce-functions.php      WooCommerce theme support scaffold
+    theme-functions/
+      basecamp-cpt-scaffold.php      Example CPT + taxonomy (commented out by default)
+    development/
+      class-basecamp-development.php  DevPilot local debug bar
+  assets/
+    css/
+      scss/                   Dart Sass source
+      build/                  Compiled .min.css (committed)
+    js/
+    img/
+  Docs/
+    developer/                Module-level reference docs
+    planning/                 Roadmap, todo, overview
+```
 
+---
 
-#### Submit Bugs & or Fixes:
-https://github.com/joshuaiz/template/issues
+## Conventions
 
-To view Release & Update Notes, read the CHANGELOG.md file in the main folder.
+### Naming
+
+| Thing | Convention | Example |
+|---|---|---|
+| Classes | `Basecamp_*` | `Basecamp_Frontend` |
+| Functions | `basecamp_*` | `basecamp_daily_maintenance_callback` |
+| Hooks (actions/filters) | `basecamp_*` | `basecamp_body_page_classes` |
+| Text domain | `basecamp` | `__( 'Text', 'basecamp' )` |
+| Image size handles | `basecamp-img-*` | `basecamp-img-xl` |
+| CSS classes | BEM | `card__picture`, `hero__img` |
+
+### File placement
+
+- New PHP modules → `inc/` subdirectory matching the area, loaded in `functions.php`
+- New page templates → theme root (alongside `page-home.php`)
+- New template parts → `template-parts/`
+- New SCSS components → `assets/css/scss/basecamp-global-layout/components/`
+
+### Escaping
+
+Follow WordPress patterns already present — `esc_html()`, `esc_url()`, `esc_attr()`, `wp_kses_post()`. Never echo raw user data or unescaped option values.
+
+---
+
+## Extending
+
+### Body classes
+
+Add page-specific body classes via the filter — never hardcode page slugs in the theme:
+
+```php
+add_filter( 'basecamp_body_page_classes', function( $map ) {
+    $map['contact'] = 'is--contact';
+    $map['shop']    = 'has--breadcrumb';
+    return $map;
+} );
+```
+
+### SEO title extensions
+
+Extend for a new CPT or plugin by adding a class to `Basecamp_Title_Manager::$extensions` in `basecamp-title-functions.php`:
+
+```php
+class Basecamp_Title_My_CPT extends Basecamp_Title_Extension {
+    public function maybe_title(): ?string {
+        if ( is_singular( 'my-cpt' ) ) {
+            return get_the_title() . ' — My CPT';
+        }
+        return null;
+    }
+}
+```
+
+### Navigation menus
+
+Register additional menu locations via the `basecamp_register_nav_menus` filter:
+
+```php
+add_filter( 'basecamp_register_nav_menus', function( $menus ) {
+    $menus['my-location'] = __( 'My Location', 'basecamp' );
+    return $menus;
+} );
+```
+
+### Image sizes
+
+Add custom sizes in `inc/class-basecamp.php` alongside the existing `add_image_size()` calls. Run `wp media regenerate --yes` after adding a new size.
+
+---
+
+## SCSS Build
+
+Source lives in `assets/css/scss/`. The Live Sass Compiler extension compiles to `assets/css/build/*.min.css` on save. Commit both source and compiled files — the compiled file is what the browser loads.
+
+See [Docs/developer/04-scss-system.md](Docs/developer/04-scss-system.md) for breakpoints, barrel file conventions, and the responsive coordinator pattern.
+
+---
+
+## WooCommerce
+
+WooCommerce support is included but disabled by default. To activate:
+
+1. Install and activate the WooCommerce plugin.
+2. In `functions.php`, uncomment the WooCommerce load line:
+   ```php
+   require_once __DIR__ . '/inc/woocommerce/woocommerce-functions.php';
+   ```
+3. `woocommerce-functions.php` handles `add_theme_support( 'woocommerce' )`, sidebar removal, and WooCommerce-specific hooks automatically once loaded.
+
+---
+
+## Developer Docs
+
+Full module-level reference is in [`Docs/developer/`](Docs/developer/):
+
+| File | Covers |
+|---|---|
+| `00-setup.md` | Install, plugins, first-run checklist |
+| `01-architecture.md` | Module system, load order, hook inventory |
+| `02-code-style.md` | Naming, escaping, class patterns |
+| `03-metaboxes.md` | Link list and video carousel meta boxes |
+| `04-scss-system.md` | Dart Sass, breakpoints, responsive coordinator |
+| `05-images-media.md` | Image sizes, WebP pipeline, `picture()` helper |
+| `06-seo.md` | Title manager, meta descriptions, Open Graph |
+
+---
+
+## License
+
+WTFPL — do whatever you want with it.

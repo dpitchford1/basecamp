@@ -1,33 +1,54 @@
 <?php get_header(); ?>
 
-<main id="main" class="m-all t-2of3 d-5of7">
+<main id="main" class="search-results">
 
-    <h1 class="archive-title"><span><?php _e( 'Search Results for:', 'templatetheme' ); ?></span> <?php echo esc_attr(get_search_query()); ?></h1>
+	<header class="search-results__header">
+		<h1 class="search-results__title">
+			<?php
+			if ( get_search_query() ) {
+				printf(
+					'%s <span class="search-results__query">&#8220;%s&#8221;</span>',
+					esc_html__( 'Search results for:', 'basecamp' ),
+					esc_html( get_search_query() )
+				);
+			} else {
+				esc_html_e( 'Search Results', 'basecamp' );
+			}
+			?>
+		</h1>
+	</header>
 
-    <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+	<?php if ( have_posts() ) : ?>
 
-        <article id="post-<?php the_ID(); ?>" <?php post_class(''); ?>>
+		<?php while ( have_posts() ) : the_post(); ?>
 
-            <?php get_template_part( 'templates/header', 'title'); ?>
+			<article id="post-<?php the_ID(); ?>" <?php post_class( 'search-results__item' ); ?>>
 
-            <?php get_template_part( 'templates/byline'); ?>
+				<?php get_template_part( 'templates/header', 'title' ); ?>
 
-            <section class="entry-content">
-                
-                <?php get_template_part( 'templates/content', 'excerpt'); ?>
+				<?php get_template_part( 'templates/byline' ); ?>
 
-            </section>
+				<div class="entry-content">
+					<?php get_template_part( 'templates/content', 'excerpt' ); ?>
+				</div>
 
-            <?php get_template_part( 'templates/category-tags'); ?>
+				<?php get_template_part( 'templates/category-tags' ); ?>
 
-        </article>
+			</article>
 
-        <?php get_template_part( 'templates/post-navigation'); ?>
+		<?php endwhile; ?>
 
-    <?php endwhile; endif; ?>
+		<?php get_template_part( 'templates/post-navigation' ); ?>
+
+	<?php else : ?>
+
+		<section class="search-results__no-results">
+			<p><?php esc_html_e( 'No results found. Try a different search term.', 'basecamp' ); ?></p>
+			<?php get_search_form(); ?>
+		</section>
+
+	<?php endif; ?>
 
 </main>
-
-<?php // get_sidebar(); ?>
 
 <?php get_footer(); ?>

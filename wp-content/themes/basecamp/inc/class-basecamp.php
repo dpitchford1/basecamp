@@ -1,21 +1,28 @@
 <?php
 /**
- * Basecamp Class
+ * Core theme bootstrap.
  *
- * @since    2.0.0
- * @package  basecamp
+ * Registers theme supports, menus, image sizes, and body-class filters.
+ * Instantiated at the bottom of this file via `return new Basecamp()`.
+ *
+ * @since   2.0.0
+ * @package basecamp
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'basecamp' ) ) :
+if ( ! class_exists( 'Basecamp' ) ) :
 
 	/**
-	 * The main basecamp class
+	 * Theme bootstrap class.
+	 *
+	 * Hooks into after_setup_theme to register everything WordPress needs before
+	 * init runs. Keep this class focused on theme supports, menus, and image sizes;
+	 * feature logic belongs in the inc/ modules.
 	 */
-	class basecamp {
+	class Basecamp {
 
 		/**
 		 * Setup class.
@@ -112,15 +119,23 @@ if ( ! class_exists( 'basecamp' ) ) :
             add_image_size( 'basecamp-img-sm', 600, 343, false );
             add_image_size( 'basecamp-img-s', 400, 229, false );
 
-            add_filter( 'image_size_names_choose', 'template_custom_image_sizes' );
+            // Portrait sizes — 3:4 hard crop. Used with srcset/<picture> for mobile portrait contexts.
+            add_image_size( 'portait-sm', 300, 400, true );
+            add_image_size( 'portait-m', 640, 853, true );
+            add_image_size( 'portait-lg', 960, 1280, true );
 
-            function template_custom_image_sizes( $sizes ) {
+            add_filter( 'image_size_names_choose', 'basecamp_custom_image_sizes' );
+
+            function basecamp_custom_image_sizes( $sizes ) {
                 return array_merge( $sizes, array(
                     'basecamp-img-xl' => __('1400px by 800px', 'basecamp'),
                     'basecamp-img-lg' => __('1280 by 720', 'basecamp'),
                     'basecamp-img-m' => __('980 by 560', 'basecamp'),
                     'basecamp-img-sm' => __('600 by 343', 'basecamp'),
                     'basecamp-img-s' => __('400 by 229', 'basecamp'),
+                    'portait-sm'     => __('Portrait 300 by 400', 'basecamp'),
+                    'portait-m'      => __('Portrait 640 by 853', 'basecamp'),
+                    'portait-lg'     => __('Portrait 960 by 1280', 'basecamp'),
                 ) );
             }
 
@@ -143,22 +158,31 @@ if ( ! class_exists( 'basecamp' ) ) :
 
 		}
 
-        /**
+		/**
 		 * Enqueue scripts and styles.
 		 *
+		 * Stub — add wp_enqueue_script() / wp_enqueue_style() calls here.
+		 * Hooked to wp_enqueue_scripts if you uncomment the add_action in
+		 * __construct(). Alternatively enqueue in header.php / footer.php directly.
+		 *
 		 * @since  1.0.0
+		 * @return void
 		 */
-		public function scripts() {
-			global $basecamp_version;
-
-			/**
-			 * Scripts
-			 */
-
+		public function scripts(): void {
 		}
 
         /**
 		 * Adds custom classes to the array of body classes.
+		 *
+		 * Page-specific classes can be declared via the basecamp_body_page_classes
+		 * filter, which receives an associative array of page-slug => class-name pairs.
+		 *
+		 * Example (in a child theme or project functions file):
+		 *   add_filter( 'basecamp_body_page_classes', function( $map ) {
+		 *       $map['contact'] = 'is--contact';
+		 *       $map['shop']    = 'has--breadcrumb';
+		 *       return $map;
+		 *   } );
 		 *
 		 * @param array $classes Classes for the body element.
 		 * @return array
@@ -169,19 +193,20 @@ if ( ! class_exists( 'basecamp' ) ) :
 				$classes[] = 'group-blog';
 			}
 
-            if ( is_page('Contact') ) {
-				$classes[] = 'is--contact';
+			/**
+			 * Page-slug → body-class map.
+			 * Populated via filter so project-specific classes stay out of the starter.
+			 *
+			 * @param array<string, string> $map Page slug => class name.
+			 */
+			$page_class_map = apply_filters( 'basecamp_body_page_classes', [] );
+
+			foreach ( $page_class_map as $slug => $class ) {
+				if ( is_page( $slug ) ) {
+					$classes[] = sanitize_html_class( $class );
+				}
 			}
 
-			/**
-			 * Adds a class when WooCommerce is not active.
-			 *
-			 * @todo Refactor child themes to remove dependency on this class.
-			 */
-            if ( is_page('Shop') ) {
-				$classes[] = 'has--breadcrumb';
-			}
-            
 			return $classes;
 		}
 
@@ -277,4 +302,4 @@ if ( ! class_exists( 'basecamp' ) ) :
 	}
 endif;
 
-return new basecamp();
+return new Basecamp();

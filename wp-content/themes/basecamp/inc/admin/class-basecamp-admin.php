@@ -1,12 +1,16 @@
 <?php
-/*------------------------------------ 
+/**
+ * Admin customisations for the Basecamp theme.
  *
- * Handles the admin area and functions for the Basecamp theme.
- * Uses a modern class-based structure for maintainability.
+ * Encapsulates all backend tweaks: login branding, dashboard widget removal,
+ * TinyMCE cleanup, admin bar modifications, and menu visibility.
+ * All hooks are registered in the constructor so the class self-wires on
+ * instantiation — no separate init() call is needed.
  *
+ * @package basecamp
  */
 
-// Hide always all email address encoder notifications
+// Suppress Email Address Encoder admin notices (filter retained for child-theme overrides).
 define( 'EAE_DISABLE_NOTICES', apply_filters( 'air_helper_remove_eae_admin_bar', true ) );
 
 /**
@@ -68,51 +72,66 @@ if ( ! class_exists( 'Basecamp_Admin' ) ) {
 		}
 
 		/**
-		 * Enqueue custom login CSS.
+		 * Enqueue custom login page CSS.
+		 *
+		 * @return void
 		 */
-		public function login_css() {
-			wp_enqueue_style( 'basecamp_login_css', get_basecamp_directory_uri() . '/inc/admin/assets/css/login.css', false );
+		public function login_css(): void {
+			wp_enqueue_style( 'basecamp_login_css', get_template_directory_uri() . '/inc/admin/assets/css/login.css', array() );
 		}
 
 		/**
-		 * Change login logo URL.
+		 * Return the site home URL for the login logo link.
+		 *
 		 * @return string
 		 */
-		public function login_url() {
+		public function login_url(): string {
 			return home_url();
 		}
 
 		/**
-		 * Change login logo title.
+		 * Return the site name for the login logo title attribute.
+		 *
 		 * @return string
 		 */
-		public function login_title() {
-			return get_option( 'blogname' );
+		public function login_title(): string {
+			return (string) get_option( 'blogname' );
 		}
 
 		/**
-		 * Enqueue custom admin CSS.
+		 * Enqueue admin area CSS.
+		 *
+		 * @return void
 		 */
-		public function admin_css() {
-			wp_enqueue_style( 'basecamp_admin_css', get_basecamp_directory_uri() . '/inc/admin/assets/css/admin.css', false );
+		public function admin_css(): void {
+			wp_enqueue_style( 'basecamp_admin_css', get_template_directory_uri() . '/inc/admin/assets/css/admin.css', array() );
 		}
 
 		/**
 		 * Custom admin footer text.
+		 *
+		 * @return void
 		 */
-		public function custom_admin_footer() {
-			_e( '<span id="footer-thankyou">Developed by <a href="https://kaneism.com" target="_blank">Kaneism</a></span>. Built using <a href="https://studio.bio/basecamp" target="_blank">basecamp</a>.', 'basecamptheme' );
+		public function custom_admin_footer(): void {
+			_e( '<span id="footer-thankyou">Built with <a href="https://github.com/joshuaiz/basecamp" target="_blank">Basecamp</a>.', 'basecamp' );
 		}
 
 		/**
-		 * Replace the default Admin login logo.
+		 * Inject inline CSS to replace the default WordPress login logo.
+		 *
+		 * Override the logo URL via the basecamp_login_logo_url filter:
+		 *   add_filter( 'basecamp_login_logo_url', fn() => get_stylesheet_directory_uri() . '/img/logo.png' );
+		 *
+		 * @return void
 		 */
-		public function wpb_login_logo() { ?>
+		public function wpb_login_logo(): void {
+			$logo_url = apply_filters( 'basecamp_login_logo_url', get_template_directory_uri() . '/assets/img/logo.png' );
+			?>
 			<style type="text/css">
 				#login h1 a, .login h1 a {
-					background-image: url(/assets/img/logos/login_logo.png);
-					height:150px;
-					width:300px;
+					background-image: url(<?php echo esc_url( $logo_url ); ?>);
+					height: 150px;
+					width: 300px;
 					background-size: 300px auto;
 					background-repeat: no-repeat;
 				}
@@ -120,94 +139,110 @@ if ( ! class_exists( 'Basecamp_Admin' ) ) {
 		<?php }
 
 		/**
-		 * Hide WP updates nag.
+		 * Remove the WordPress core update nag from the admin.
+		 *
+		 * @return void
 		 */
-		public function air_helper_wphidenag() {
+		public function air_helper_wphidenag(): void {
 			remove_action( 'admin_notices', 'update_nag' );
 		}
 
 		/**
 		 * Replace "Howdy" in the admin bar with "Logged in as".
+		 *
 		 * @param WP_Admin_Bar $wp_admin_bar
+		 * @return void
 		 */
-		public function replace_howdy( $wp_admin_bar ) {
+		public function replace_howdy( WP_Admin_Bar $wp_admin_bar ): void {
 			$my_account = $wp_admin_bar->get_node( 'my-account' );
 			if ( isset( $my_account->title ) ) {
 				$wp_admin_bar->add_node( [
 					'id'    => 'my-account',
-					'title' => str_replace( 'Howdy, ', __( 'Logged in as,', 'text_domain' ), $my_account->title ),
+					'title' => str_replace( 'Howdy, ', __( 'Logged in as,', 'basecamp' ), $my_account->title ),
 				] );
 			}
 		}
 
 		/**
-		 * Remove H1 from TinyMCE editor.
-		 * @param array $args
+		 * Remove H1 from the TinyMCE block formats dropdown.
+		 *
+		 * @param array $args TinyMCE init args.
 		 * @return array
 		 */
-		public function cleanup_mce($args) {
+		public function cleanup_mce( array $args ): array {
 			$args['block_formats'] = 'Paragraph=p;Heading 3=h3;Heading 4=h4; Heading 5=h5; Heading 6=h6';
 			return $args;
 		}
 
 		/**
-		 * Disable autosave script in admin.
+		 * Deregister the autosave script in the admin to reduce XHR noise.
+		 *
+		 * @return void
 		 */
-		public function disable_autosave() {
-			wp_deregister_script('autosave');
+		public function disable_autosave(): void {
+			wp_deregister_script( 'autosave' );
 		}
 
 		/**
-		 * Remove comments from admin bar.
+		 * Remove the comments shortcut from the admin bar.
+		 *
+		 * @return void
 		 */
-		public function remove_comments_from_admin_bar() {
+		public function remove_comments_from_admin_bar(): void {
 			global $wp_admin_bar;
-			$wp_admin_bar->remove_menu('comments');
+			$wp_admin_bar->remove_menu( 'comments' );
 		}
 
 		/**
-		 * Remove transients on post publish.
-		 * @param string $new
-		 * @param string $old
-		 * @param WP_Post $post
+		 * Delete the recent-posts transient when a post is published.
+		 *
+		 * @param string  $new  New post status.
+		 * @param string  $old  Previous post status.
+		 * @param WP_Post $post The post object.
+		 * @return void
 		 */
-		public function remove_transient_on_publish( $new, $old, $post ) {
-			if( 'publish' == $new )
+		public function remove_transient_on_publish( string $new, string $old, WP_Post $post ): void {
+			if ( 'publish' === $new ) {
 				delete_transient( 'recent_posts_query_results' );
+			}
 		}
 
 		/**
-		 * Hide unnecessary menus and submenus in admin.
+		 * Hide Appearance sub-menus and other unnecessary admin menu entries.
+		 *
+		 * Removes: Header, Background, Customize, Theme File Editor, Patterns,
+		 * the Comments top-level menu, and the Discussion settings page.
+		 *
+		 * @return void
 		 */
-		public function hide_unnecessary_wordpress_menus() {
+		public function hide_unnecessary_wordpress_menus(): void {
 			global $submenu;
-			global $current_user;
-			wp_get_current_user();
+
+			$hidden_appearance_items = [
+				'Header', 'Background', 'Customize',
+				'Theme File Editor', 'Patterns', 'Marketing', 'basecamp',
+			];
 
 			if ( isset( $submenu['themes.php'] ) ) {
-				foreach($submenu['themes.php'] as $menu_index => $theme_menu){
-					if(
-						$theme_menu[0] == 'Header' || 
-						$theme_menu[0] == 'Background' || 
-						$theme_menu[0] == 'Customize' || 
-						$theme_menu[0] == 'Theme File Editor' ||
-						$theme_menu[0] == 'Patterns' ||
-						$theme_menu[0] == 'Marketing' ||
-						$theme_menu[0] == 'basecamp')
-						unset($submenu['themes.php'][$menu_index]);
+				foreach ( $submenu['themes.php'] as $index => $item ) {
+					if ( in_array( $item[0], $hidden_appearance_items, true ) ) {
+						unset( $submenu['themes.php'][ $index ] );
+					}
 				}
 			}
+
 			remove_menu_page( 'edit-comments.php' );
-			remove_submenu_page( 'options-general.php', 'options-discussion.php');
+			remove_submenu_page( 'options-general.php', 'options-discussion.php' );
 		}
 
 		/**
-		 * Disable the block editor for all post types (use classic editor everywhere).
-		 * @param bool $use_block_editor
-		 * @param string $post_type
-		 * @return bool
+		 * Disable the block editor for all post types, enforcing classic editor.
+		 *
+		 * @param bool   $use_block_editor Whether to use the block editor.
+		 * @param string $post_type        The post type being edited.
+		 * @return bool Always false.
 		 */
-		public function disable_block_editor_everywhere($use_block_editor, $post_type) {
+		public function disable_block_editor_everywhere( bool $use_block_editor, string $post_type ): bool {
 			return false;
 		}
 	}

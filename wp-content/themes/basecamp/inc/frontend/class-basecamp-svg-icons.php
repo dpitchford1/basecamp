@@ -118,14 +118,14 @@ class Basecamp_SVG_Icons {
 	 *
 	 * @static
 	 *
-	 * @since Twenty Twenty-One 1.0
+	 * @since Basecamp 1.0
 	 *
-	 * @param string $group The icon group.
-	 * @param string $icon  The icon.
-	 * @param int    $size  The icon-size in pixels.
-	 * @return string
+	 * @param string $group The icon group: 'ui' or 'social'.
+	 * @param string $icon  The icon key (must exist in the relevant icon map).
+	 * @param int    $size  Icon size in pixels. Default 24.
+	 * @return string SVG markup, or empty string if the icon is not found.
 	 */
-	public static function get_svg( $group, $icon, $size ) {
+	public static function get_svg( string $group, string $icon, int $size = 24 ): string {
 
 		if ( 'ui' === $group ) {
 			$arr = self::$icons;
@@ -161,15 +161,19 @@ class Basecamp_SVG_Icons {
 	/**
 	 * Detects the social network from a URL and returns the SVG code for its icon.
 	 *
+	 * Matches the URL against the social icon domain map and returns the
+	 * corresponding SVG with a trailing screen-reader text opening tag.
+	 * Returns null when no matching social network is found.
+	 *
 	 * @static
 	 *
-	 * @since Twenty Twenty-One 1.0
+	 * @since Basecamp 1.0
 	 *
-	 * @param string $uri  Social link.
-	 * @param int    $size The icon-size in pixels.
-	 * @return string|null
+	 * @param string $uri  Social link URL.
+	 * @param int    $size Icon size in pixels. Default 24.
+	 * @return string|null SVG markup + screen-reader span opener, or null.
 	 */
-	public static function get_social_link_svg( $uri, $size ) {
+	public static function get_social_link_svg( string $uri, int $size = 24 ): ?string {
 		static $regex_map; // Only compute regex map once, for performance.
 
 		if ( ! isset( $regex_map ) ) {
