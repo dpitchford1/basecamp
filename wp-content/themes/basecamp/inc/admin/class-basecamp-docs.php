@@ -10,13 +10,15 @@
  * @package basecamp
  */
 
+namespace Basecamp\Admin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 require_once __DIR__ . '/lib/Parsedown.php';
 
-class Basecamp_Docs {
+class Docs {
 
 	const MENU_SLUG = 'basecamp-docs';
 	const DOCS_DIR  = 'Docs';
@@ -235,7 +237,7 @@ class Basecamp_Docs {
 	 * @return string       HTML.
 	 */
 	private static function parse_markdown( string $text ): string {
-		$parsedown = new Parsedown();
+		$parsedown = new \Parsedown();
 		$parsedown->setSafeMode( true );
 		$parsedown->setBreaksEnabled( false );
 		return $parsedown->text( $text );
@@ -379,4 +381,4 @@ class Basecamp_Docs {
 	}
 }
 
-Basecamp_Docs::init();
+Docs::init();

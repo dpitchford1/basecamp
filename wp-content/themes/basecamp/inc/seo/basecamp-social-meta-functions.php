@@ -7,7 +7,9 @@
  * @package basecamp
  */
 
-class Basecamp_Social_Meta {
+namespace Basecamp\SEO;
+
+class SocialMeta {
 
 	/**
 	 * Register hooks for social meta functionality.
@@ -230,4 +232,4 @@ class Basecamp_Social_Meta {
 }
 
 // Register hooks on init.
-add_action('init', ['Basecamp_Social_Meta', 'init']);
+add_action('init', [ SocialMeta::class, 'init' ]);

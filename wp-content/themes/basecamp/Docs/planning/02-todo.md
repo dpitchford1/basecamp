@@ -65,12 +65,13 @@ Format: `[ ]` not started · `[x]` done · `[-]` deferred/blocked
 - [x] README.md at theme root — install, extend, conventions
 - [x] DocBlock audit — all classes and public methods
 - [x] `style.css` theme header — version, description, tags
-- [ ] Update `screenshot.png`
+- [-] Update `screenshot.png` — manual; no code change needed
 - [x] WooCommerce scaffold review and activation docs
-- [ ] SCSS system documentation
-- [ ] Performance audit on clean WP install
+- [x] SCSS system documentation — `04-scss-system.md` reviewed; accurate, no changes needed
+- [-] Performance audit on clean WP install — manual; run against clean WP before distributing
 - [-] PHP namespace migration (if decided in Phase 1)
-- [ ] Full Docs review pass before distribution
+- [x] Full Docs review pass before distribution — all seven developer docs reviewed and updated
+- [x] Theme Settings page — `Basecamp_Settings` class, Appearance → Theme Settings; GA4 ID, cookie compliance toggle, GSC verification, schema toggle, WebP toggle; `07-theme-settings.md` added
 
 ---
 

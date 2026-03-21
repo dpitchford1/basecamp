@@ -5,47 +5,71 @@
  * @package basecamp
  */
 
+namespace Basecamp\Admin;
 
-
-
-/**
- * Sanitizes choices (selects / radios)
- */
-function kaneism_sanitize_choices( $input, $setting ) {
-	$input = sanitize_key( $input );
-	$choices = $setting->manager->get_control( $setting->id )->choices;
-	return ( array_key_exists( $input, $choices ) ? $input : $setting->default );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 /**
- * Checkbox sanitization callback.
+ * Miscellaneous admin helpers — sanitizers, timeouts, MIME-type allowlisting.
  */
-function kaneism_sanitize_checkbox( $checked ) {
-	return ( ( isset( $checked ) && true === $checked ) ? true : false );
-}
+class AdminHelpers {
 
-/**
- * Increases PHP execution time limit for admin operations.
- */
-function basecamp_increase_admin_timeout() {
-	if (is_admin()) {
+	/**
+	 * Register all hooks managed by this class.
+	 */
+	public static function init(): void {
+		add_action( 'admin_init', [ __CLASS__, 'increase_admin_timeout' ], 5 );
+		add_filter( 'upload_mimes', [ __CLASS__, 'add_mime_types' ] );
+	}
+
+	/**
+	 * Sanitizes a select / radio Customizer control value against its choices.
+	 *
+	 * @param mixed                 $input   Raw input value.
+	 * @param \WP_Customize_Setting $setting Customizer setting object.
+	 * @return mixed Sanitized value or the control default.
+	 */
+	public static function sanitize_choices( $input, $setting ) {
+		$input   = sanitize_key( $input );
+		$choices = $setting->manager->get_control( $setting->id )->choices;
+		return array_key_exists( $input, $choices ) ? $input : $setting->default;
+	}
+
+	/**
+	 * Sanitizes a checkbox Customizer control value.
+	 *
+	 * @param mixed $checked Raw input.
+	 * @return bool
+	 */
+	public static function sanitize_checkbox( $checked ): bool {
+		return isset( $checked ) && true === $checked;
+	}
+
+	/**
+	 * Raises the PHP execution time limit on post-editing screens.
+	 */
+	public static function increase_admin_timeout(): void {
+		if ( ! is_admin() ) {
+			return;
+		}
 		global $pagenow;
-		if (in_array($pagenow, array('post.php', 'post-new.php', 'edit.php'))) {
-			@set_time_limit(300);
-			if (defined('WP_DEBUG') && WP_DEBUG) {
-				$post_type = isset($_REQUEST['post_type']) ? $_REQUEST['post_type'] : 'post';
-				error_log('[TIMEOUT] Increased execution time limit for post type: ' . $post_type);
-			}
+		if ( in_array( $pagenow, [ 'post.php', 'post-new.php', 'edit.php' ], true ) ) {
+			@set_time_limit( 300 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		}
 	}
-}
-add_action('admin_init', 'basecamp_increase_admin_timeout', 5);
 
-/**
- * Add new mime types.
- */
-function my_myme_types($mime_types){
-	$mime_types['svg'] = 'image/svg+xml';
-	return $mime_types;
+	/**
+	 * Allow SVG uploads.
+	 *
+	 * @param array $mime_types Existing allowed MIME types.
+	 * @return array
+	 */
+	public static function add_mime_types( array $mime_types ): array {
+		$mime_types['svg'] = 'image/svg+xml';
+		return $mime_types;
+	}
 }
-add_filter('upload_mimes', 'my_myme_types');
+
+AdminHelpers::init();

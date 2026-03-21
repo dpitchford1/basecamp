@@ -5,7 +5,9 @@
  * @package basecamp
  */
 
-class Basecamp_Frontend {
+namespace Basecamp\Frontend;
+
+class Frontend {
 
 	/**
 	 * Initialize hooks.
@@ -21,7 +23,7 @@ class Basecamp_Frontend {
 		add_filter('is_active_sidebar', [ __CLASS__, 'remove_sidebar' ], 10, 2);
 
 		// Social icons in menu (Basecamp SVG system)
-		if ( class_exists( 'Basecamp_SVG_Icons' ) ) {
+			if ( class_exists( SVGIcons::class ) ) {
 			add_filter( 'walker_nav_menu_start_el', [ __CLASS__, 'basecamp_nav_menu_social_icons' ], 10, 4 );
 		}
 	}
@@ -157,7 +159,7 @@ class Basecamp_Frontend {
 	 */
 	public static function basecamp_nav_menu_social_icons( $item_output, $item, $depth, $args ) {
 		if ( 'social' === $args->theme_location ) {
-			$svg = \Basecamp_SVG_Icons::get_social_link_svg( $item->url, 24 );
+				$svg = SVGIcons::get_social_link_svg( $item->url, 24 );
 			if ( empty( $svg ) && function_exists( 'basecamp_get_theme_svg' ) ) {
 				$svg = \basecamp_get_theme_svg( 'link' );
 			}
@@ -173,7 +175,7 @@ class Basecamp_Frontend {
 	 * @param array $args Optional. Additional paginate_links args.
 	 */
 	public static function page_navi( $query = null, $args = [] ) {
-		$query = $query instanceof WP_Query ? $query : $GLOBALS['wp_query'];
+	$query = $query instanceof \WP_Query ? $query : $GLOBALS['wp_query'];
 		$total_pages = isset( $query->max_num_pages ) ? (int) $query->max_num_pages : 1;
 		if ( $total_pages <= 1 ) {
 			return;
@@ -228,7 +230,7 @@ class Basecamp_Frontend {
 
 		$query_args = wp_parse_args( $args, array_merge( $default_args, [ 'tag__in' => $tags ] ) );
 
-		$related_query = new WP_Query( $query_args );
+		$related_query = new \WP_Query( $query_args );
 
 		echo '<ul id="related--posts">';
 		if ( $related_query->have_posts() ) {

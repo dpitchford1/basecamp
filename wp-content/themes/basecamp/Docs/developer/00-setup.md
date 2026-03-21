@@ -165,5 +165,5 @@ A form at the top accepts any URL on the site — submit it and all iframes relo
 
 ## Notes
 
-- `WP_DEBUG` is `true` in the default `wp-config.php` — do not push a debug-enabled config to production.
-- GA4 is host-gated (`inc/theme-functions/basecamp-analytics.php`) — it will not fire on local or non-production domains.
+- `WP_DEBUG` is controlled by the `BASECAMP_ENV` environment variable — set `BASECAMP_ENV=local` for full debug output locally. Never set `BASECAMP_ENV=local` on production.
+- GA4 fires on all environments but only sends config hits when `BASECAMP_ENV` is `production` (or unset). Configure the GA4 Measurement ID at **Appearance → Theme Settings** — no code change needed.

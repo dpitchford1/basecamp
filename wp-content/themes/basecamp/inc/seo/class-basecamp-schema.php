@@ -9,11 +9,13 @@
  * @package basecamp
  */
 
+namespace Basecamp\SEO;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Basecamp_Schema {
+class Schema {
 
 	/**
 	 * Register hooks.
@@ -248,4 +250,4 @@ class Basecamp_Schema {
 
 }
 
-Basecamp_Schema::init();
+Schema::init();

@@ -2,22 +2,24 @@
 /**
  * Basecamp Title System
  *
- * Extensible page title manager. Basecamp_Title_Core handles all standard
+ * Extensible page title manager. TitleCore handles all standard
  * WordPress contexts. Additional extensions can be registered in
- * Basecamp_Title_Manager::$extensions to handle custom post types, taxonomies,
+ * TitleManager::$extensions to handle custom post types, taxonomies,
  * or plugin-specific contexts (e.g. WooCommerce).
  *
  * To add an extension:
  *  1. Define a class with a static maybe_title( $title ) method.
  *  2. Return a formatted title string if the current request is your concern.
  *  3. Return null to pass control to the next extension.
- *  4. Add the class name to Basecamp_Title_Manager::$extensions.
+ *  4. Add the FQCN to TitleManager::$extensions.
  *
  * Extensions are evaluated in array order. Basecamp_Title_Core always runs last
  * as the catch-all fallback.
  *
  * @package basecamp
  */
+
+namespace Basecamp\SEO;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Core — catch-all fallback. Always runs last.
 // =============================================================================
 
-class Basecamp_Title_Core {
+class TitleCore {
 	public static function maybe_title( $title ) {
 		$site_name = get_bloginfo( 'name' );
 		if ( empty( $title ) && is_singular() ) {
@@ -95,7 +97,7 @@ class Basecamp_Title_Woo {
 // Manager — registers filters and runs extensions in order.
 // =============================================================================
 
-class Basecamp_Title_Manager {
+class TitleManager {
 
 	/**
 	 * Registered extension class names.
@@ -104,8 +106,8 @@ class Basecamp_Title_Manager {
 	 * @var string[]
 	 */
 	protected static $extensions = [
-		// 'Basecamp_Title_Portfolio',
-		// 'Basecamp_Title_Woo',
+		// 'Basecamp\\SEO\\TitlePortfolio',
+		// 'Basecamp\\SEO\\TitleWoo',
 	];
 
 	public static function init() {
@@ -122,7 +124,7 @@ class Basecamp_Title_Manager {
 				}
 			}
 		}
-		return Basecamp_Title_Core::maybe_title( $title );
+		return TitleCore::maybe_title( $title );
 	}
 
 	public static function filter_wp_title( $title, $sep ) {
@@ -130,4 +132,4 @@ class Basecamp_Title_Manager {
 	}
 }
 
-Basecamp_Title_Manager::init();
+TitleManager::init();

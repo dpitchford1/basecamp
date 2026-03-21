@@ -25,7 +25,7 @@ wp-content/themes/basecamp/
 
   inc/
     class-basecamp.php       Core setup: menus, image sizes, theme supports
-    admin/                   Admin area: login styles, dashboard tweaks, docs
+    admin/                   Admin area: login styles, dashboard tweaks, docs, theme settings
     core/                    Scheduled events
     development/             Dev-only tools (local IP gated)
     frontend/                SVG icons, frontend class, cookie consent
@@ -70,15 +70,16 @@ CSS is referenced in `header.php` via root-relative paths (`/assets/css/build/..
 Modules are loaded in this order:
 
 1. Core theme class (`inc/class-basecamp.php`)
-2. Frontend classes (SVG icons, frontend helpers, remove-bloat, cookie consent)
-3. Admin-only modules (wrapped in `is_admin()`)
-4. SEO modules (`class-basecamp-seo.php` bootstraps title, meta, social, schema)
-5. Theme functions (meta link list, analytics)
-6. Image optimization (WebP)
-7. REST endpoints
-8. Scheduled events (cron)
-9. Development tools (localhost IP gate)
-10. Ecommerce (disabled by default — uncomment `require_once` lines to activate)
+2. **Theme Settings** (`inc/admin/class-basecamp-settings.php`) — loaded before all other modules so `Basecamp_Settings::get()` is available everywhere
+3. Frontend classes (SVG icons, frontend helpers, remove-bloat, cookie consent)
+4. Admin-only modules (wrapped in `is_admin()`)
+5. SEO modules (`class-basecamp-seo.php` bootstraps title, meta, social, schema)
+6. Theme functions (meta link list, analytics)
+7. Image optimization (WebP — skipped entirely when disabled in Theme Settings)
+8. REST endpoints
+9. Scheduled events (cron)
+10. Development tools (localhost IP gate)
+11. Ecommerce (disabled by default — uncomment `require_once` lines to activate)
 
 ---
 
@@ -87,6 +88,7 @@ Modules are loaded in this order:
 - Registration hooks (`init`) stay in dedicated files — no anonymous closures for public APIs
 - Filters always have a `@return` docblock
 - Hook priorities follow this convention:
+  - Priority 1: Google Search Console verification meta tag
   - Priority 4: Cookie consent defaults (before GA at 5)
   - Priority 5: Google Analytics snippet
   - Priority 10: Default (most theme hooks)
@@ -95,10 +97,11 @@ Modules are loaded in this order:
 
 ## Environment Detection
 
-- **Production hosts** defined in `BASECAMP_GA_PROD_HOSTS` constant (set in `basecamp-analytics.php`)
-- GA only fires on production hosts
-- Dev tools load only when `REMOTE_ADDR` is `127.0.0.1` or `::1`
-- `WP_DEBUG` is enabled; avoid extra `error_log()` calls
+- **Debug** — `WP_DEBUG`, `WP_DEBUG_LOG`, `SCRIPT_DEBUG` and friends are all driven by the `BASECAMP_ENV` server environment variable (`local` / `staging` / `production`). See `wp-config-sample.php` for the full matrix.
+- **Dev tools** — `Basecamp_Development` loads only when `REMOTE_ADDR` is `127.0.0.1` or `::1`; automatically absent on any non-localhost IP.
+- **Analytics env** — `basecamp_is_prod_host()` in `basecamp-analytics.php` reads `BASECAMP_ENV`; GA loads on all environments but only sends config hits when the env is `production` (or unset, which defaults to production).
+- **WooCommerce** — guarded by `basecamp_is_woocommerce_activated()` inside `woocommerce-functions.php`; safe to load unconditionally.
+- **Feature flags** — Cookie consent, Schema output, and WebP optimisation can each be toggled at **Appearance → Theme Settings** without touching code. See `Docs/developer/07-theme-settings.md`.
 
 ---
 
@@ -107,6 +110,3 @@ Modules are loaded in this order:
 A health-check endpoint is registered at `GET /wp-json/basecamp/v1/ping` — returns `{"status":"ok"}`.
 
 Defined in `inc/rest/basecamp-rest-endpoints.php`.
-
----
-

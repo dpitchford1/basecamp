@@ -7,7 +7,9 @@
  * @package basecamp
  */
 
-class Basecamp_Meta_Description {
+namespace Basecamp\SEO;
+
+class MetaDescription {
 
 	/**
 	 * Register hooks for meta description functionality.
@@ -125,4 +127,4 @@ class Basecamp_Meta_Description {
 }
 
 // Register hooks on init.
-add_action('init', ['Basecamp_Meta_Description', 'init']);
+add_action('init', [ MetaDescription::class, 'init' ]);

@@ -10,16 +10,15 @@
  * @package basecamp
  */
 
+namespace Basecamp\Admin;
+
 // Suppress Email Address Encoder admin notices (filter retained for child-theme overrides).
 define( 'EAE_DISABLE_NOTICES', apply_filters( 'air_helper_remove_eae_admin_bar', true ) );
 
 /**
- * Class Basecamp_Admin
- *
  * Encapsulates all admin/backend customizations for the Basecamp theme.
  */
-if ( ! class_exists( 'Basecamp_Admin' ) ) {
-	class Basecamp_Admin {
+class Admin {
 
 		/**
 		 * Register all admin hooks.
@@ -153,7 +152,7 @@ if ( ! class_exists( 'Basecamp_Admin' ) ) {
 		 * @param WP_Admin_Bar $wp_admin_bar
 		 * @return void
 		 */
-		public function replace_howdy( WP_Admin_Bar $wp_admin_bar ): void {
+		public function replace_howdy( \WP_Admin_Bar $wp_admin_bar ): void {
 			$my_account = $wp_admin_bar->get_node( 'my-account' );
 			if ( isset( $my_account->title ) ) {
 				$wp_admin_bar->add_node( [
@@ -201,7 +200,7 @@ if ( ! class_exists( 'Basecamp_Admin' ) ) {
 		 * @param WP_Post $post The post object.
 		 * @return void
 		 */
-		public function remove_transient_on_publish( string $new, string $old, WP_Post $post ): void {
+		public function remove_transient_on_publish( string $new, string $old, \WP_Post $post ): void {
 			if ( 'publish' === $new ) {
 				delete_transient( 'recent_posts_query_results' );
 			}
@@ -244,10 +243,7 @@ if ( ! class_exists( 'Basecamp_Admin' ) ) {
 		 */
 		public function disable_block_editor_everywhere( bool $use_block_editor, string $post_type ): bool {
 			return false;
-		}
 	}
 }
 
-// Instantiate the admin class.
-new Basecamp_Admin();
-?>
+new Admin();

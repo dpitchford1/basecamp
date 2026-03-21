@@ -4,7 +4,9 @@
  * Adds a repeater-style meta box for managing video carousel slides.
  */
 
-class Basecamp_Video_Carousel_Metabox {
+namespace Basecamp\Frontend;
+
+class VideoCarouselMetabox {
 	public function __construct() {
 		add_action( 'add_meta_boxes', [ $this, 'add_metabox' ] );
 		add_action( 'save_post', [ $this, 'save_metabox' ] );
@@ -111,4 +113,4 @@ class Basecamp_Video_Carousel_Metabox {
 	}
 }
 
-new Basecamp_Video_Carousel_Metabox();
+new VideoCarouselMetabox();

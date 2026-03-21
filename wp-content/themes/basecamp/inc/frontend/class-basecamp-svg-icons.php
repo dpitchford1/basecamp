@@ -5,7 +5,9 @@
  * @package basecamp
  */
 
-class Basecamp_SVG_Icons {
+namespace Basecamp\Frontend;
+
+class SVGIcons {
 
 	/**
 	 * User Interface icons – svg sources.

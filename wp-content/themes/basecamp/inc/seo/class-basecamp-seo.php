@@ -8,9 +8,14 @@
  * @package basecamp
  */
 
+use Basecamp\Admin\Settings;
+use Basecamp\SEO\Schema;
+
 require_once __DIR__ . '/basecamp-title-functions.php';
 require_once __DIR__ . '/basecamp-meta-description-functions.php';
 require_once __DIR__ . '/basecamp-social-meta-functions.php';
 require_once __DIR__ . '/class-basecamp-schema.php';
 
-Basecamp_Schema::init();
+if ( Settings::get( 'schema_output', '1' ) ) {
+	Schema::init();
+}

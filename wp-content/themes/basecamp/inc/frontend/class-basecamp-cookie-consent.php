@@ -15,18 +15,27 @@
  * @package basecamp
  */
 
+namespace Basecamp\Frontend;
+
+use Basecamp\Admin\Settings;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Basecamp_Cookie_Consent {
+class CookieConsent {
 
 	const OPTION_KEY = 'basecamp_cookie_settings';
 
 	/**
 	 * Register all hooks.
+	 * Bails early when the cookie compliance feature is disabled in Theme Settings.
 	 */
 	public static function init(): void {
+		if ( ! Settings::get( 'cookie_compliance', '1' ) ) {
+			return;
+		}
+
 		add_action( 'wp_head',             [ __CLASS__, 'output_consent_defaults' ], 4 );
 		add_action( 'wp_enqueue_scripts',  [ __CLASS__, 'enqueue_assets' ] );
 		add_action( 'wp_footer',           [ __CLASS__, 'render_banner' ], 100 );
@@ -67,7 +76,7 @@ class Basecamp_Cookie_Consent {
 	 * Pushes consent/default into dataLayer; GA processes it before any config call.
 	 */
 	public static function output_consent_defaults(): void {
-		if ( ! defined( 'BASECAMP_GA_MEASUREMENT_ID' ) || ! BASECAMP_GA_MEASUREMENT_ID ) {
+		if ( ! Settings::get( 'ga_id' ) ) {
 			return;
 		}
 		?>
@@ -106,7 +115,7 @@ class Basecamp_Cookie_Consent {
 
 		// Pass GA ID to JS so the consent update can include it.
 		wp_localize_script( 'basecamp-cookie-consent', 'basecampCookieConfig', [
-			'gaId' => defined( 'BASECAMP_GA_MEASUREMENT_ID' ) ? BASECAMP_GA_MEASUREMENT_ID : '',
+			'gaId' => (string) Settings::get( 'ga_id', '' ),
 		] );
 	}
 
@@ -331,4 +340,4 @@ class Basecamp_Cookie_Consent {
 	}
 }
 
-Basecamp_Cookie_Consent::init();
+CookieConsent::init();

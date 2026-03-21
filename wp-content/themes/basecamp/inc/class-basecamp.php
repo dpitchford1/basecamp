@@ -9,20 +9,15 @@
  * @package basecamp
  */
 
+namespace Basecamp;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'Basecamp' ) ) :
+if ( ! class_exists( __NAMESPACE__ . '\\Theme' ) ) :
 
-	/**
-	 * Theme bootstrap class.
-	 *
-	 * Hooks into after_setup_theme to register everything WordPress needs before
-	 * init runs. Keep this class focused on theme supports, menus, and image sizes;
-	 * feature logic belongs in the inc/ modules.
-	 */
-	class Basecamp {
+	class Theme {
 
 		/**
 		 * Setup class.
@@ -124,20 +119,18 @@ if ( ! class_exists( 'Basecamp' ) ) :
             add_image_size( 'portait-m', 640, 853, true );
             add_image_size( 'portait-lg', 960, 1280, true );
 
-            add_filter( 'image_size_names_choose', 'basecamp_custom_image_sizes' );
-
-            function basecamp_custom_image_sizes( $sizes ) {
-                return array_merge( $sizes, array(
-                    'basecamp-img-xl' => __('1400px by 800px', 'basecamp'),
-                    'basecamp-img-lg' => __('1280 by 720', 'basecamp'),
-                    'basecamp-img-m' => __('980 by 560', 'basecamp'),
-                    'basecamp-img-sm' => __('600 by 343', 'basecamp'),
-                    'basecamp-img-s' => __('400 by 229', 'basecamp'),
-                    'portait-sm'     => __('Portrait 300 by 400', 'basecamp'),
-                    'portait-m'      => __('Portrait 640 by 853', 'basecamp'),
-                    'portait-lg'     => __('Portrait 960 by 1280', 'basecamp'),
-                ) );
-            }
+add_filter( 'image_size_names_choose', function( $sizes ) {
+				return array_merge( $sizes, array(
+					'basecamp-img-xl' => __('1400px by 800px', 'basecamp'),
+					'basecamp-img-lg' => __('1280 by 720', 'basecamp'),
+					'basecamp-img-m'  => __('980 by 560', 'basecamp'),
+					'basecamp-img-sm' => __('600 by 343', 'basecamp'),
+					'basecamp-img-s'  => __('400 by 229', 'basecamp'),
+					'portait-sm'      => __('Portrait 300 by 400', 'basecamp'),
+					'portait-m'       => __('Portrait 640 by 853', 'basecamp'),
+					'portait-lg'      => __('Portrait 960 by 1280', 'basecamp'),
+				) );
+			} );
 
 			/**
 			 * Add support for editor styles.
@@ -302,4 +295,4 @@ if ( ! class_exists( 'Basecamp' ) ) :
 	}
 endif;
 
-return new Basecamp();
+return new Theme();

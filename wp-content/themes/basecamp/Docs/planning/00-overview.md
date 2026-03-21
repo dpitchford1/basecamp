@@ -37,7 +37,7 @@ It is not a framework. It is not a page builder. It is not feature-complete out 
 
 ### Sensible Defaults Over Plugin Overuse
 - SEO handled natively (titles, meta descriptions, Open Graph, Twitter Card, JSON-LD schema) — defers to Yoast/Rank Math if present
-- Google Analytics loaded conditionally (production hosts only) with cookie consent gating
+- Google Analytics loaded conditionally (`BASECAMP_ENV`-based) with cookie consent gating; ID configured via Theme Settings
 - Cookie consent banner built in — no plugin needed
 - Schema.org structured data output natively
 - Classic editor enforced — no Gutenberg friction
@@ -71,6 +71,7 @@ It is not a framework. It is not a page builder. It is not feature-complete out 
 | `inc/frontend/class-basecamp-cookie-consent.php` | GDPR/CCPA banner + GA Consent Mode v2 |
 | `inc/admin/class-basecamp-admin.php` | Admin UX: login, dashboard, editor tweaks |
 | `inc/admin/class-basecamp-docs.php` | In-admin Markdown documentation viewer |
+| `inc/admin/class-basecamp-settings.php` | Theme Settings page — GA, compliance, feature flags |
 | `inc/seo/` | Title, meta, social, schema — all native |
 | `inc/img-optimization/` | WebP conversion on upload + batch processing |
 | `inc/theme-functions/basecamp-analytics.php` | Conditional GA4 loader |

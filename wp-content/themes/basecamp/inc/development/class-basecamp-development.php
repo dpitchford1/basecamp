@@ -5,7 +5,9 @@
  * @package basecamp
  */
 
-class Basecamp_Development {
+namespace Basecamp\Development;
+
+class Development {
 
 	public function __construct() {
 		if ( $this->is_local() ) {

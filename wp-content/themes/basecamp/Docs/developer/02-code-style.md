@@ -1,6 +1,6 @@
 # Code Style Guide
 
-Basecamp Coding & Architecture Guide — v0.2
+Basecamp Coding & Architecture Guide — v1.0
 
 ---
 

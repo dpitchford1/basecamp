@@ -1,212 +1,133 @@
 <?php
 /**
- * Basecamp Bloat and cleanup.
- * 
- * Clean up the site and remove bloat.
- * @package kane
+ * RemoveBloat — frontend cleanup for Basecamp theme.
+ *
+ * Removes WP default cruft: emoji scripts, feed links, REST/oEmbed head tags,
+ * jQuery Migrate, heartbeat, useless stylesheets, and pingback URL.
+ *
+ * @package basecamp
  */
 
-if ( ! class_exists( 'cleanup' ) ) :
+namespace Basecamp\Frontend;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class RemoveBloat {
 
 	/**
-	 * The main markup cleanup class
+	 * Register all cleanup hooks.
 	 */
-	class cleanup { 
+	public static function init(): void {
+		add_action( 'init',                   [ __CLASS__, 'disable_emojis' ] );
+		add_action( 'stop_heartbeat',         [ __CLASS__, 'stop_heartbeat' ] );
+		add_action( 'wp_enqueue_scripts',     [ __CLASS__, 'remove_useless_styles' ], 20 );
+		add_action( 'wp_default_scripts',     [ __CLASS__, 'remove_jquery_migrate' ] );
 
-		/**
-		 * Setup class.
-		 *
-		 * @since 1.0
-		 */
-		public function __construct() {
+		add_filter( 'tiny_mce_plugins',       [ __CLASS__, 'disable_emojis_tinymce' ] );
+		add_filter( 'wp_resource_hints',      [ __CLASS__, 'disable_emojis_dns_prefetch' ], 10, 2 );
+		add_filter( 'feed_links_show_comments_feed', '__return_false' );
+		add_filter( 'the_generator',          '__return_empty_string' );
+		add_filter( 'xmlrpc_enabled',         '__return_false' );
+		add_filter( 'bloginfo_url',           [ __CLASS__, 'remove_pingback_url' ], 11, 2 );
+		add_filter( 'wp_img_tag_add_auto_sizes', '__return_false' );
 
-			//add_action( 'language_attributes', array( $this, 'add_opengraph_doctype' ) );
-			add_action( 'stop_heartbeat', array( $this, 'stop_heartbeat' ) );
-			add_action( 'init', array( $this, 'disable_emojis' ) );
-			add_action( 'tiny_mce_plugins', array( $this, 'disable_emojis_tinymce' ) );
-			add_action( 'wp_resource_hints', array( $this, 'disable_emojis_remove_dns_prefetch' ), 10, 2 );
-            remove_action('wp_head', 'feed_links', 2);
-            remove_action('wp_head', 'feed_links_extra', 3);
-            remove_action('wp_head', 'start_post_rel_link', 10, 0);
-            remove_action('wp_head', 'parent_post_rel_link', 10, 0);
-            remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
-            remove_action('wp_head', 'wp_shortlink_wp_head');
-            remove_action('wp_head', 'wp_generator');
-            remove_action('wp_head', 'wlwmanifest_link');
-            remove_action( 'wp_head', 'rsd_link' );
+		remove_action( 'wp_head', 'feed_links',                  2 );
+		remove_action( 'wp_head', 'feed_links_extra',            3 );
+		remove_action( 'wp_head', 'rsd_link' );
+		remove_action( 'wp_head', 'wlwmanifest_link' );
+		remove_action( 'wp_head', 'wp_generator' );
+		remove_action( 'wp_head', 'wp_shortlink_wp_head' );
+		remove_action( 'wp_head', 'rest_output_link_wp_head',    10 );
+		remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+		remove_action( 'wp_head', 'wp_oembed_add_host_js' );
+		remove_action( 'template_redirect', 'rest_output_link_header', 11 );
+		remove_filter( 'oembed_dataparse',    'wp_filter_oembed_result',  10 );
+		remove_filter( 'the_content',         'convert_smilies' );
+		remove_action( 'set_comment_cookies', 'wp_set_comment_cookies' );
+		remove_action( 'wp_enqueue_scripts',  'wp_enqueue_global_styles' );
+		remove_action( 'wp_body_open',        'wp_global_styles_render_svg_filters' );
+	}
 
-            // Remove junk from the head
-            add_filter( 'feed_links_show_comments_feed', '__return_false' );
-            add_filter( 'the_generator', 'ks_rss_version' );
-            add_filter( 'xmlrpc_enabled', '__return_false' );
+	/**
+	 * Disable the Heartbeat API script.
+	 */
+	public static function stop_heartbeat(): void {
+		wp_deregister_script( 'heartbeat' );
+	}
 
-            add_filter('bloginfo_url', function($output, $property){
-                error_log("====property=" . $property);
-                return ($property == 'pingback_url') ? null : $output;
-              }, 11, 2);
+	/**
+	 * Remove all emoji-related scripts, styles, and DNS prefetch hints.
+	 */
+	public static function disable_emojis(): void {
+		remove_action( 'wp_head',             'print_emoji_detection_script', 7 );
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'wp_print_styles',     'print_emoji_styles' );
+		remove_action( 'admin_print_styles',  'print_emoji_styles' );
+		remove_filter( 'the_content_feed',    'wp_staticize_emoji' );
+		remove_filter( 'comment_text_rss',    'wp_staticize_emoji' );
+		remove_filter( 'wp_mail',             'wp_staticize_emoji_for_email' );
+	}
 
-            //Remove REST API link tag
-            remove_action( 'wp_head', 'rest_output_link_wp_head', 10 );
+	/**
+	 * Remove the TinyMCE emoji plugin.
+	 *
+	 * @param  array $plugins Registered TinyMCE plugins.
+	 * @return array
+	 */
+	public static function disable_emojis_tinymce( array $plugins ): array {
+		return array_diff( $plugins, [ 'wpemoji' ] );
+	}
 
-            // disable REST API link in HTTP headers
-            remove_action( 'template_redirect', 'rest_output_link_header', 11, 0 );
-
-            // disable oEmbed discovery links
-            remove_action( 'wp_head', 'wp_oembed_add_host_js' );
-            remove_filter('oembed_dataparse', 'wp_filter_oembed_result', 10);
-            remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
-            remove_action( 'wp_head', 'wp_oembed_add_discovery_links', 10 );
-
-            // Disable converting :) to smileys
-            remove_filter('the_content', 'convert_smilies');
-
-            // Disable cookies for comments
-            remove_action('set_comment_cookies', 'wp_set_comment_cookies');
-
-            // Remove unwanted SVG filter injection WP
-            remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
-            remove_action( 'wp_body_open', 'wp_global_styles_render_svg_filters' );
-
-			add_action( 'wp_enqueue_scripts', array( $this, 'remove_useless_styles' ), 20 );
-                
-            // If Woocommerce - Remove all stylesheets in one line
-            //add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
-
+	/**
+	 * Remove the emoji CDN from DNS prefetch hints.
+	 *
+	 * @param  array  $urls          Resource hint URLs.
+	 * @param  string $relation_type Hint type (dns-prefetch, preconnect, etc.).
+	 * @return array
+	 */
+	public static function disable_emojis_dns_prefetch( array $urls, string $relation_type ): array {
+		if ( 'dns-prefetch' === $relation_type ) {
+			$emoji_svg_url = apply_filters( 'emoji_svg_url', 'https://s.w.org/images/core/emoji/2/svg/' );
+			$urls = array_diff( $urls, [ $emoji_svg_url ] );
 		}
+		return $urls;
+	}
 
-        /**
-         * Add Opengraph to html tag
-         *
-         * @since 2.4.0
-         */
-        public function add_opengraph_doctype($output){
-            return $output . ' xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml"';
-        }
+	/**
+	 * Dequeue unwanted core stylesheet handles.
+	 */
+	public static function remove_useless_styles(): void {
+		wp_dequeue_style( 'classic-theme-styles' );
+		wp_dequeue_style( 'global-styles' );
+		wp_dequeue_style( 'wp-block-library' );
+	}
 
-        /**
-         * Disable Heartbeat API
-         */
-        public function stop_heartbeat() {
-            wp_deregister_script('heartbeat');
-        }
+	/**
+	 * Remove jQuery Migrate from the jquery bundle on the frontend.
+	 *
+	 * @param \WP_Scripts $scripts The WP_Scripts instance.
+	 */
+	public static function remove_jquery_migrate( \WP_Scripts $scripts ): void {
+		if ( ! is_admin() && ! empty( $scripts->registered['jquery'] ) ) {
+			$scripts->registered['jquery']->deps = array_diff(
+				$scripts->registered['jquery']->deps,
+				[ 'jquery-migrate' ]
+			);
+		}
+	}
 
-        /****************************************
-        * REMOVE WP EXTRAS *
-        ****************************************/
-
-        /**
-         * Disable the emoji's
-         */
-        public function disable_emojis() {
-            remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
-            remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
-            remove_action( 'wp_print_styles', 'print_emoji_styles' );
-            remove_action( 'admin_print_styles', 'print_emoji_styles' ); 
-            remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
-            remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
-            remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
-        }
-
-        /**
-         * Filter function used to remove the tinymce emoji plugin.
-         * 
-         * @param array $plugins 
-         * @return array Difference betwen the two arrays
-         */
-        public function disable_emojis_tinymce( $plugins ) {
-            if ( is_array( $plugins ) ) {
-                return array_diff( $plugins, array( 'wpemoji' ) );
-                } else {
-                    return array();
-                }
-        }
-
-        /**
-         * Remove emoji CDN hostname from DNS prefetching hints.
-         *
-         * @param array $urls URLs to print for resource hints.
-         * @param string $relation_type The relation type the URLs are printed for.
-         * @return array Difference betwen the two arrays.
-         */
-        public function disable_emojis_remove_dns_prefetch( $urls, $relation_type ) {
-            if ( 'dns-prefetch' == $relation_type ) {
-                /** This filter is documented in wp-includes/formatting.php */
-                $emoji_svg_url = apply_filters( 'emoji_svg_url', 'https://s.w.org/images/core/emoji/2/svg/' );
-
-                $urls = array_diff( $urls, array( $emoji_svg_url ) );
-            }
-        return $urls;
-        }		
-
-        /**
-         * Remove the standard useless WP Styles
-         */
-
-        public function remove_useless_styles() {
-            wp_dequeue_style( 'classic-theme-styles' );
-            wp_dequeue_style( 'global-styles' );
-
-            wp_dequeue_style( 'wp-block-library' ); // Wordpress core styles.min
-
-            wp_dequeue_style( 'select2' );
-
-            wp_deregister_style( 'kaneism-style' );
-            wp_dequeue_style( 'kaneism-style' );
-
-            wp_deregister_style( 'kaneism-icons' );
-            wp_dequeue_style( 'kaneism-icons' );
-
-            wp_deregister_style( 'brands-styles' );
-            wp_dequeue_style( 'brands-styles' );
-
-            // if woocommerce - vendors and wc-blocks
-            // wp_deregister_style( 'wc-blocks-style' );
-            // wp_dequeue_style( 'wc-blocks-style' );
-
-        }
-
-       
+	/**
+	 * Remove the pingback URL from bloginfo output.
+	 *
+	 * @param  string $output   Original value.
+	 * @param  string $property Requested property name.
+	 * @return string|null
+	 */
+	public static function remove_pingback_url( string $output, string $property ): ?string {
+		return ( 'pingback_url' === $property ) ? null : $output;
+	}
 }
-endif;
 
-//Remove jQuery migrate
-function remove_jquery_migrate( $scripts ) {
-    if ( !is_admin() && !empty( $scripts->registered['jquery'] ) ) {
-    $scripts->registered['jquery']->deps = array_diff( $scripts->registered['jquery']->deps, ['jquery-migrate'] );
-    }
-}
-add_action('wp_default_scripts', 'remove_jquery_migrate');
-
-
-// CF7 is loading extra baggage, disabling and loading oldschool in footer.
-// add_filter( 'wpcf7_load_js', '__return_false' );
-// add_filter( 'wpcf7_load_css', '__return_false' );
-
-// add_action( 'wp_print_scripts', 'my_deregister_javascript', 100 );
-// function my_deregister_javascript() {
-//   if ( !is_page('Contact') ) {
-//     wp_deregister_script( 'contact-form-7' );
-//   }
-// }
-
-// add_action( 'wp_print_styles', 'my_deregister_styles', 100 );
-// function my_deregister_styles() {
-//   if ( !is_page('Contact') ) {
-//     wp_deregister_style( 'contact-form-7' );
-//   }
-// }
-
-/**
- * Disable the auto sizes attribute for images
- * 
- * @param array $sizes
- * @return array
- */
-add_filter('wp_img_tag_add_auto_sizes', '__return_false');
-
-// Disable Speculative Loading Completely
-// add_filter( 'wp_speculation_rules_configuration', '__return_null' );
-
-return new cleanup();
-
-?>
+RemoveBloat::init();
