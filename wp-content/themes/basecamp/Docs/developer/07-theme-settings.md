@@ -2,7 +2,7 @@
 
 **Appearance → Theme Settings** is the central configuration page for the Basecamp theme. It exposes a small set of foundational options that would otherwise require touching PHP source files.
 
-All values are stored as a single serialised option array (`basecamp_theme_settings`) and read anywhere via the `Basecamp_Settings::get()` helper.
+All values are stored as a single serialised option array (`basecamp_theme_settings`) and read anywhere via the `Basecamp\Admin\Settings::get()` helper (aliased as `Basecamp_Settings::get()` for back-compat).
 
 Defined in `inc/admin/class-basecamp-settings.php`.
 
@@ -30,7 +30,7 @@ GA loads on all environments but only sends config hits when `BASECAMP_ENV` is `
 
 When enabled, the GDPR/CCPA consent banner and Google Consent Mode v2 defaults are active. The banner blocks analytics cookies until the visitor accepts.
 
-When disabled, the entire `Basecamp_Cookie_Consent` class is never initialised — no banner markup, no Consent Mode scripts, and no cookie-related JS is loaded on the frontend.
+When disabled, the entire `Basecamp\Frontend\CookieConsent` class is never initialised — no banner markup, no Consent Mode scripts, and no cookie-related JS is loaded on the frontend.
 
 The banner copy (headline, body text, button labels, position) is configured separately at **Settings → Cookie Consent**.
 
@@ -43,7 +43,7 @@ The banner copy (headline, body text, button labels, position) is configured sep
 | Structured Data | `schema_output` | Checkbox | `1` (enabled) |
 | WebP Image Optimisation | `webp_optimization` | Checkbox | `1` (enabled) |
 
-**Structured Data** — controls whether `Basecamp_Schema::init()` is called. When disabled, no Schema.org JSON-LD is output in the page head.
+**Structured Data** — controls whether `Basecamp\SEO\Schema::init()` is called. When disabled, no Schema.org JSON-LD is output in the page head.
 
 **WebP Image Optimisation** — when disabled, the three WebP `require_once` files are never loaded, so no URL rewriting or on-upload conversion occurs. Useful for hosts with broken WebP support or projects where the client is supplying pre-optimised assets.
 
@@ -63,13 +63,13 @@ Paste only the `content` value from the `<meta name="google-site-verification" c
 
 ```php
 // Simple read — returns the stored value or the default if not yet saved.
-$ga_id = Basecamp_Settings::get( 'ga_id' );
+$ga_id = Basecamp\Admin\Settings::get( 'ga_id' );
 
 // With an explicit fallback.
-$webp = Basecamp_Settings::get( 'webp_optimization', '1' );
+$webp = Basecamp\Admin\Settings::get( 'webp_optimization', '1' );
 ```
 
-`Basecamp_Settings` is loaded early in `functions.php` (before Frontend modules) so `::get()` is safe to call from any subsequent module.
+`Basecamp\Admin\Settings` is loaded early in `functions.php` (before Frontend modules) so `::get()` is safe to call from any subsequent module. The `Basecamp_Settings` alias is registered immediately after for back-compat with any code that uses the old name.
 
 ---
 
@@ -81,7 +81,7 @@ The GA4 Measurement ID can be locked at the server/infrastructure level by defin
 define( 'BASECAMP_GA_MEASUREMENT_ID', 'G-XXXXXXXXXX' );
 ```
 
-No other settings currently support a constant override. Add cases to `Basecamp_Settings::get()` if additional server-level locks are needed.
+No other settings currently support a constant override. Add cases to `Basecamp\Admin\Settings::get()` if additional server-level locks are needed.
 
 ---
 

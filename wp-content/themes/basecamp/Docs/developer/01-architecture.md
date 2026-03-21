@@ -70,7 +70,7 @@ CSS is referenced in `header.php` via root-relative paths (`/assets/css/build/..
 Modules are loaded in this order:
 
 1. Core theme class (`inc/class-basecamp.php`)
-2. **Theme Settings** (`inc/admin/class-basecamp-settings.php`) — loaded before all other modules so `Basecamp_Settings::get()` is available everywhere
+2. **Theme Settings** (`inc/admin/class-basecamp-settings.php`) — loaded before all other modules so `Basecamp\Admin\Settings::get()` is available everywhere (aliased as `Basecamp_Settings` for back-compat)
 3. Frontend classes (SVG icons, frontend helpers, remove-bloat, cookie consent)
 4. Admin-only modules (wrapped in `is_admin()`)
 5. SEO modules (`class-basecamp-seo.php` bootstraps title, meta, social, schema)
@@ -98,9 +98,9 @@ Modules are loaded in this order:
 ## Environment Detection
 
 - **Debug** — `WP_DEBUG`, `WP_DEBUG_LOG`, `SCRIPT_DEBUG` and friends are all driven by the `BASECAMP_ENV` server environment variable (`local` / `staging` / `production`). See `wp-config-sample.php` for the full matrix.
-- **Dev tools** — `Basecamp_Development` loads only when `REMOTE_ADDR` is `127.0.0.1` or `::1`; automatically absent on any non-localhost IP.
-- **Analytics env** — `basecamp_is_prod_host()` in `basecamp-analytics.php` reads `BASECAMP_ENV`; GA loads on all environments but only sends config hits when the env is `production` (or unset, which defaults to production).
-- **WooCommerce** — guarded by `basecamp_is_woocommerce_activated()` inside `woocommerce-functions.php`; safe to load unconditionally.
+- **Dev tools** — `Basecamp\Development\Development` loads only when `REMOTE_ADDR` is `127.0.0.1` or `::1`; automatically absent on any non-localhost IP.
+- **Analytics env** — `Analytics::is_prod_host()` in `basecamp-analytics.php` reads `BASECAMP_ENV`; GA loads on all environments but only sends config hits when the env is `production` (or unset, which defaults to production).
+- **WooCommerce** — guarded by `WooCommerceIntegration::is_active()` inside `woocommerce-functions.php`; safe to load unconditionally.
 - **Feature flags** — Cookie consent, Schema output, and WebP optimisation can each be toggled at **Appearance → Theme Settings** without touching code. See `Docs/developer/07-theme-settings.md`.
 
 ---

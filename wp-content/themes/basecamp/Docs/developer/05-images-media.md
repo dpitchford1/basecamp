@@ -59,7 +59,7 @@ echo esc_url( $src[0] );
 
 ## Responsive Images — Portrait / Landscape `<picture>`
 
-**Helper:** `Basecamp_Frontend::picture()`
+**Helper:** `Basecamp\Frontend\Frontend::picture()` (aliased as `Basecamp_Frontend::picture()` in templates)
 
 For contexts where a portrait crop should be served on mobile and a landscape image on wider screens, use the `picture()` helper. It outputs a `<picture>` element with an optional portrait `<source>` (single URL, one mobile-optimised crop) plus a full-featured landscape `<img>` via `wp_get_attachment_image()`.
 
@@ -77,6 +77,8 @@ Basecamp_Frontend::picture( get_post_thumbnail_id(), [
     'img_class' => 'hero__img',
 ] );
 ```
+
+> `Basecamp_Frontend` is a `class_alias` for `Basecamp\Frontend\Frontend` — both names work in PHP.
 
 Outputs:
 

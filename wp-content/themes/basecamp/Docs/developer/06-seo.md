@@ -23,28 +23,28 @@ The title system is extensible via a manager + extension class pattern. Two filt
 
 ### How It Works
 
-`Basecamp_Title_Manager::filter_title()` iterates through a list of extension classes. Each extension implements a static `maybe_title( $title )` method that returns a formatted title string or `null` if the current page is not its concern. The first non-null return wins. If no extension claims the request, `Basecamp_Title_Core::maybe_title()` provides the fallback.
+`Basecamp\SEO\TitleManager::filter_title()` iterates through a list of extension classes. Each extension implements a static `maybe_title( $title )` method that returns a formatted title string or `null` if the current page is not its concern. The first non-null return wins. If no extension claims the request, `Basecamp\SEO\TitleCore::maybe_title()` provides the fallback.
 
 ```
 Request comes in
     ↓
 [registered extensions run in order — none active by default]
     ↓ (all return null)
-Basecamp_Title_Core::maybe_title()     → singular fallback, then site name
+Basecamp\SEO\TitleCore::maybe_title()     → singular fallback, then site name
 ```
 
 ### Built-in Extensions
 
 | Class | Handles |
 |---|---|
-| `Basecamp_Title_Core` | Catch-all. Singular → `post_title - SiteName`, anything else → `SiteName` |
+| `Basecamp\SEO\TitleCore` | Catch-all. Singular → `post_title - SiteName`, anything else → `SiteName` |
 
 ### Adding a New Title Extension
 
 1. Create a class with a static `maybe_title` method:
 
 ```php
-class Basecamp_Title_News {
+class TitleNews extends \Basecamp\SEO\TitleCore {
     public static function maybe_title( $title ) {
         if ( is_singular( 'post' ) ) {
             $site = get_bloginfo( 'name' );
@@ -58,22 +58,22 @@ class Basecamp_Title_News {
 }
 ```
 
-2. Register it in `Basecamp_Title_Manager::$extensions`:
+2. Register it in `Basecamp\SEO\TitleManager::$extensions`:
 
 ```php
 protected static $extensions = [
-    'Basecamp_Title_News',   // ← add your extension class names here
+    'Basecamp\\SEO\\TitleNews',   // ← add your FQCN extension class names here
 ];
 ```
 
-You can define the class in the same file or in its own include — just ensure it's loaded before `Basecamp_Title_Manager::init()` runs.
+You can define the class in the same file or in its own include — just ensure it's loaded before `Basecamp\SEO\TitleManager::init()` runs.
 
 ---
 
 ## Meta Descriptions
 
 **File:** `inc/seo/basecamp-meta-description-functions.php`  
-**Class:** `Basecamp_Meta_Description`  
+**Class:** `Basecamp\SEO\MetaDescription`  
 **Hook:** `wp_head` at priority `1`
 
 Outputs three tags simultaneously:
@@ -106,13 +106,13 @@ You can retrieve a description without triggering head output:
 
 ```php
 // For a post/page
-$desc = Basecamp_Meta_Description::get_meta_description( $post_id );
+$desc = Basecamp\SEO\MetaDescription::get_meta_description( $post_id );
 
 // For a WP_Post object
-$desc = Basecamp_Meta_Description::get_meta_description( $post, 25 ); // 25-word limit
+$desc = Basecamp\SEO\MetaDescription::get_meta_description( $post, 25 ); // 25-word limit
 
 // For a WP_Term
-$desc = Basecamp_Meta_Description::get_meta_description( $term_object );
+$desc = Basecamp\SEO\MetaDescription::get_meta_description( $term_object );
 ```
 
 Returns a plain string (no HTML, no tags). The optional second argument overrides the default 30-word limit.
@@ -122,7 +122,7 @@ Returns a plain string (no HTML, no tags). The optional second argument override
 ## Social Meta (Open Graph + Twitter Card)
 
 **File:** `inc/seo/basecamp-social-meta-functions.php`  
-**Class:** `Basecamp_Social_Meta`  
+**Class:** `Basecamp\SEO\SocialMeta`  
 **Hooks:** `wp_head` at priority `2` (OG/Twitter tags) and `3` (image dimensions — currently no-op, kept for compatibility)
 
 Outputs Open Graph and Twitter Card tags. On singular posts the image dimensions (`og:image:width` / `og:image:height`) are also output when the share image is hosted locally (determined by comparing the URL against `site_url()`).
@@ -183,7 +183,7 @@ update_user_meta( $user_id, 'twitter', 'handleWithoutAt' );
 
 ```php
 // Returns an array: title, url, image, type, description, site_name
-$meta = Basecamp_Social_Meta::get_social_meta( $post_id );
+$meta = Basecamp\SEO\SocialMeta::get_social_meta( $post_id );
 
 echo $meta['image'];       // Full image URL
 echo $meta['description']; // 30-word excerpt or site tagline
@@ -192,7 +192,7 @@ echo $meta['description']; // 30-word excerpt or site tagline
 ## JSON-LD Structured Data
 
 **File:** `inc/seo/class-basecamp-schema.php`  
-**Class:** `Basecamp_Schema`  
+**Class:** `Basecamp\SEO\Schema`  
 **Hook:** `wp_head` at priority `6` (after meta description at 1, social at 2)
 
 Outputs `<script type="application/ld+json">` blocks. Defers to Yoast SEO or Rank Math if either is active (same check as the other SEO modules).
@@ -264,7 +264,7 @@ add_filter( 'basecamp_schema_breadcrumb', fn( $crumb ) => $crumb );
 
 ## Plugin Compatibility
 
-Both `Basecamp_Meta_Description::init()` and `Basecamp_Social_Meta::init()` check for active SEO plugins before registering their `wp_head` hooks:
+Both `Basecamp\SEO\MetaDescription::init()` and `Basecamp\SEO\SocialMeta::init()` check for active SEO plugins before registering their `wp_head` hooks:
 
 ```php
 if ( class_exists( 'WPSEO_Frontend' ) || class_exists( 'RankMath' ) ) {
@@ -272,7 +272,7 @@ if ( class_exists( 'WPSEO_Frontend' ) || class_exists( 'RankMath' ) ) {
 }
 ```
 
-If either plugin is detected the entire module bows out — no hooks are registered, no tags are output. The title system (`Basecamp_Title_Manager`) does not perform this check, as Yoast/Rank Math both hook at higher priorities and override it naturally.
+If either plugin is detected the entire module bows out — no hooks are registered, no tags are output. The title system (`Basecamp\SEO\TitleManager`) does not perform this check, as Yoast/Rank Math both hook at higher priorities and override it naturally.
 
 > If you install Yoast or Rank Math in the future, the theme's meta description and social tags will automatically stop outputting. The title system will be overridden by the plugin's own `pre_get_document_title` filter. No code changes required.
 
@@ -281,8 +281,8 @@ If either plugin is detected the entire module bows out — no hooks are registe
 ## Head Output Order
 
 ```
-priority 1  →  Basecamp_Meta_Description  (description + og:description + twitter:description)
-priority 2  →  Basecamp_Social_Meta       (og:title, og:image, twitter:card, etc.)
+priority 1  →  Basecamp\SEO\MetaDescription  (description + og:description + twitter:description)
+priority 2  →  Basecamp\SEO\SocialMeta       (og:title, og:image, twitter:card, etc.)
 priority 3  →  (image dimension hook — no-op, kept for backwards compatibility)
 priority 4  →  Cookie Consent defaults     (GA Consent Mode v2 — see cookie consent docs)
 priority 5  →  GA4 analytics snippet
