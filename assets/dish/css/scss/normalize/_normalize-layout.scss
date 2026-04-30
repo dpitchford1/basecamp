@@ -1,0 +1,83 @@
+/* Document
+* ========================================================================== */
+
+/**
+* 1. Use the default cursor in all browsers (opinionated).
+* 2. Change the line height in all browsers (opinionated).
+* 3. Breaks words to prevent overflow in all browsers (opinionated).
+* 4. Use a 4-space tab width in all browsers (opinionated).
+* 5. Remove the grey highlight on links in iOS (opinionated).
+* 6. Prevent adjustments of font size after orientation changes in iOS.
+*/
+
+:where(:root) {
+    line-height: 1.6; /* 2 */
+    overflow-wrap: break-word; /* 3 */
+    -moz-tab-size: 4; /* 4 */
+    tab-size: 4; /* 4 */
+    -webkit-tap-highlight-color: transparent; /* 5 */
+    -webkit-text-size-adjust: 100%; /* 6 */
+    text-size-adjust: 100%; /* 6 */
+}
+
+html{
+    min-height: 100%;
+    text-rendering: optimizeLegibility;
+	-webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+}
+
+/**
+* 1. Add border box sizing in all browsers (opinionated).
+* 2. Backgrounds do not repeat by default (opinionated).
+*/
+
+*,
+::before,
+::after {
+    box-sizing: inherit; /* 1 */
+    background-repeat: no-repeat; /* 2 */
+    text-decoration: none; /* 1 */
+    //     font-smooth: always;
+//     -moz-osx-font-smoothing: grayscale;
+}
+
+// Seeing some weird behaviour with this, so commenting out for now
+
+// @media (prefers-reduced-motion) {
+//     *, ::before, ::after {
+//         animation-duration: 0.01ms !important;
+//         animation-iteration-count: 1 !important;
+//         transition-duration: 0.01ms !important;
+//         scroll-behavior: auto !important;
+//         background-attachment: initial; 
+//     }
+// }
+
+/* 1.1 Browser and Document setup / nomalize */
+
+/**
+* Remove the margin in all browsers (opinionated).
+*/
+
+:where(body) {
+    min-height: 100%;
+    position: relative;
+    z-index: 0; 
+    // -webkit-font-smoothing: antialiased;
+    // font-smooth: always;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+    font-size: 1rem;
+}
+body, iframe, article, aside, details, figure, footer, header, nav, section, summary, form, fieldset, legend{ margin: 0; padding: 0; }
+	
+/* Html5 structure
+---------------------------------------------- */
+article, aside, details, figcaption, figure, footer, header, main, nav, section, summary{ display: block; }
+
+/* 1.2 Global importants */
+/* Clear fix */
+.cf:before, .cf:after   { content:""; display:table; }
+.cf:after               { clear:both; }

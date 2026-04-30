@@ -1,4 +1,4 @@
-<div id="sidebar1" class="sidebar m-all t-1of3 d-2of7 last-col">
+<div id="sidebar1" class="aside">
 
 	<?php if ( is_active_sidebar( 'sidebar1' ) ) : ?>
 

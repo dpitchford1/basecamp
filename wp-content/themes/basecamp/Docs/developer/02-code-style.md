@@ -19,6 +19,8 @@ Basecamp Coding & Architecture Guide — v1.0
 - Indent: 4 spaces (tabs in WordPress Core files, spaces in theme files)
 - Line length soft limit: 120 (no hard wrap if readability suffers)
 - One feature per file — avoid giant catch-all utility files
+- **`declare(strict_types=1)`** must be the first statement in every `.php` file in `inc/` (after `<?php` and before `namespace`)
+- **`final class`** on every class that is not explicitly designed to be extended. If a class needs to be subclassed, document why in a docblock comment
 
 ---
 
@@ -26,12 +28,82 @@ Basecamp Coding & Architecture Guide — v1.0
 
 | Type | Pattern | Example |
 |------|---------|---------|
-| Functions | `basecamp_<domain>_<action>()` | `basecamp_posts_get_related()` |
+| PHP namespace | `Basecamp\<Area>` | `Basecamp\Frontend`, `Basecamp\SEO` |
+| Class name (namespaced) | PascalCase, no prefix | `Frontend`, `MetaLinkList`, `TitleManager` |
+| Functions (global) | `basecamp_<domain>_<action>()` | `basecamp_posts_get_related()` |
 | Filters / actions | `basecamp_<area>_<thing>` | `basecamp_query_args` |
 | Meta keys | `_basecamp_<context>_<name>` | `_basecamp_post_featured` |
 | Template parts | `template-parts/<area>/<component>.php` | `template-parts/content/card.php` |
 | Variables | Semantic names | `$post`, `$items` (not `$arr`, `$data`) |
 | Constants | `BASECAMP_<NAME>` | `BASECAMP_GA_MEASUREMENT_ID` |
+
+---
+
+## 3a. PHP Namespaces
+
+All classes under `inc/` are namespaced. The hierarchy maps to concern areas:
+
+| Namespace | Classes |
+|---|---|
+| `Basecamp` | `Theme` — core theme bootstrap |
+| `Basecamp\Admin` | `Admin`, `Settings`, `Docs`, `AdminHelpers` |
+| `Basecamp\Frontend` | `Frontend`, `SVGIcons`, `CookieConsent`, `Toast`, `VideoCarouselMetabox`, `RemoveBloat` |
+| `Basecamp\SEO` | `TitleCore`, `TitleManager`, `MetaDescription`, `SocialMeta`, `Schema` |
+| `Basecamp\Core` | `ScheduledEvents` |
+| `Basecamp\ThemeFunctions` | `Analytics`, `MetaLinkList`, `CategoryURL` |
+| `Basecamp\Ecommerce` | `WooCommerceIntegration` |
+| `Basecamp\Development` | `Development` |
+
+### Adding a new class
+
+1. Create the file under the appropriate `inc/<area>/` directory.
+2. Declare `namespace Basecamp\<Area>;` as the first statement after `<?php`.
+3. Define the class. Static-method classes self-boot with a `ClassName::init();` call at the bottom; instantiated classes are wired in `functions.php`.
+4. Add the `require_once` to `functions.php` in the correct section group.
+5. WP core classes referenced inside a namespace must be prefixed with `\`: `\WP_Query`, `\WP_Post`, `\WP_Admin_Bar`.
+
+```php
+<?php
+declare(strict_types=1);
+// inc/theme-functions/class-basecamp-my-feature.php
+
+namespace Basecamp\ThemeFunctions;
+
+use Basecamp\Admin\Settings;
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+final class MyFeature {
+
+    public static function init(): void {
+        add_action( 'wp_head', [ __CLASS__, 'output' ] );
+    }
+
+    public static function output(): void {
+        $value = Settings::get( 'my_key' );
+        // ...
+    }
+}
+
+MyFeature::init();
+```
+
+### Template-callable global functions
+
+Functions called directly from template files (e.g. `basecamp_get_link_list()`) **must be declared in `functions.php`**, not inside a namespaced `inc/` file. PHP scopes bare functions to whatever namespace is active in the file — declaring them in a namespaced file silently breaks global resolution.
+
+### Back-compat aliases
+
+Two `class_alias()` bridges are registered in `functions.php`:
+
+| Alias | Resolves to |
+|---|---|
+| `Basecamp_Frontend` | `Basecamp\Frontend\Frontend` |
+| `Basecamp_Settings` | `Basecamp\Admin\Settings` |
+
+These exist because `header.php` and the WebP files reference the old names. Do not add new aliases unless there is a concrete back-compat requirement.
 
 ---
 
@@ -138,7 +210,6 @@ function basecamp_log( string $message ): void {
 
 ## 14. Future Roadmap
 
-- PHP namespace migration (`Basecamp\Inc\Frontend`, etc.)
 - REST read endpoints for content data (public fields only)
 - Block editor (Gutenberg) opt-in helpers
 - Accessibility audit (ARIA labels on all interactive areas)

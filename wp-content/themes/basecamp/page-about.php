@@ -8,7 +8,7 @@
 
 get_header(); ?>
 
-<main id="main" class="site-main bits-test-page">
+<main id="main-content" class="site-main bits-test-page">
     <?php the_title( '<h2 class="sizes-XLG page--heading">', '</h2>' ); ?>
     <div class="blurb--quote"><?php the_content(); ?></div>
     <?php

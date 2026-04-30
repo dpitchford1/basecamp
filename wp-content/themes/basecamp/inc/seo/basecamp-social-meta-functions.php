@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Basecamp Social Meta Class
  *
@@ -9,7 +11,7 @@
 
 namespace Basecamp\SEO;
 
-class SocialMeta {
+final class SocialMeta {
 
 	/**
 	 * Register hooks for social meta functionality.
@@ -142,6 +144,9 @@ class SocialMeta {
 		if (strpos($title, $site_name) === false) {
 			$title .= ' - ' . $site_name;
 		}
+
+		// Allow extensions to override the final OG title (e.g. breadcrumb-style CPT titles).
+		$title = apply_filters( 'basecamp_og_title', $title );
 
 		echo '<meta property="og:title" content="' . esc_attr($title) . '">' . PHP_EOL;
 		echo '<meta property="og:url" content="' . esc_url($url) . '">' . PHP_EOL;

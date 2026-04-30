@@ -41,8 +41,19 @@ require_once __DIR__ . '/inc/frontend/class-basecamp-frontend.php';
 class_alias( 'Basecamp\Frontend\Frontend', 'Basecamp_Frontend' );
 require_once __DIR__ . '/inc/frontend/remove-bloat.php';
 require_once __DIR__ . '/inc/frontend/class-basecamp-cookie-consent.php';
-require_once __DIR__ . '/inc/frontend/class-basecamp-video-carousel-metabox.php';
+require_once __DIR__ . '/inc/frontend/class-basecamp-toast.php';
+//require_once __DIR__ . '/inc/frontend/class-basecamp-video-carousel-metabox.php';
+require_once __DIR__ . '/inc/frontend/basecamp-page-helpers.php';
+require_once __DIR__ . '/inc/frontend/basecamp-subnav.php';
 $basecamp_frontend = new Basecamp_Frontend();
+
+/**
+ * Global template tag for the Toast bar.
+ * Declared here (no namespace) so it resolves as a true global function.
+ */
+function the_toast(): void {
+	\Basecamp\Frontend\Toast::render();
+}
 
 // ---------------------------------------------------------------------------
 // Admin
@@ -51,7 +62,10 @@ $basecamp_frontend = new Basecamp_Frontend();
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin/class-basecamp-admin.php';
 	require_once __DIR__ . '/inc/admin/basecamp-admin-helpers.php';
+	require_once __DIR__ . '/inc/admin/basecamp-media.php';
 	require_once __DIR__ . '/inc/admin/class-basecamp-docs.php';
+	require_once __DIR__ . '/inc/admin/class-basecamp-page-theme.php';
+	new \Basecamp\Admin\PageTheme();
 }
 
 // ---------------------------------------------------------------------------
@@ -82,6 +96,10 @@ require_once __DIR__ . '/inc/theme-functions/basecamp-analytics.php';
 // require_once __DIR__ . '/inc/theme-functions/basecamp-cpt-scaffold.php';
 // Basecamp_CPT_Scaffold::init();
 
+// Category URL — removes /category/ base natively (no plugin needed). Flush
+// permalinks after enabling: WP Admin → Settings → Permalinks → Save.
+// require_once __DIR__ . '/inc/theme-functions/basecamp-category-url.php';
+
 // ---------------------------------------------------------------------------
 // Image Optimization (WebP)
 // ---------------------------------------------------------------------------
@@ -89,6 +107,7 @@ require_once __DIR__ . '/inc/theme-functions/basecamp-analytics.php';
 if ( Basecamp_Settings::get( 'webp_optimization', '1' ) ) {
 	require_once __DIR__ . '/inc/img-optimization/basecamp-webp-functions.php';
 	require_once __DIR__ . '/inc/img-optimization/basecamp-webp-conversion.php';
+	require_once __DIR__ . '/inc/img-optimization/basecamp-thumb-regen.php';
 	require_once __DIR__ . '/inc/img-optimization/webp-test-admin.php';
 }
 
@@ -108,7 +127,8 @@ require_once __DIR__ . '/inc/core/basecamp-scheduled-events.php';
 // Development Tools (local only)
 // ---------------------------------------------------------------------------
 
-if ( in_array( $_SERVER['REMOTE_ADDR'], [ '127.0.0.1', '::1' ] ) ) {
+if ( function_exists( 'wp_get_environment_type' ) && wp_get_environment_type() === 'local'
+	|| in_array( $_SERVER['REMOTE_ADDR'] ?? '', [ '127.0.0.1', '::1', '::ffff:127.0.0.1' ] ) ) {
 	require_once __DIR__ . '/inc/development/class-basecamp-development.php';
 	$basecamp_development = new \Basecamp\Development\Development();
 }

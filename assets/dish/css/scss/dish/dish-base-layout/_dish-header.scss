@@ -1,0 +1,29 @@
+/* 0.0 $ Common HTML Base Structure
+====================================================================== */
+@forward "header/menu-small-screen" as menu-small-screen-*;
+@forward "header/global-header";
+@forward "header/menu-global" as menu-global-*;
+
+
+// NEW HEADER STYLES (2024-06-10) - to be integrated into the above structure
+// .navigation-global {
+// 	xbackground-color: rgba(0,0,0, 0.3);
+// 	border-radius: 9px;
+// 	backdrop-filter: blur(10px);
+// 	font-weight: bold;
+// }
+
+// .navigation-global li {
+  
+// }
+
+// .navigation-global li :hover {
+// 	text-decoration: none;
+// 	background-color: rgba(0,0,0, 0.3);
+// 	border-radius: 9px;
+// }
+
+// .global-header {
+// 	backdrop-filter: blur(9px);
+// 	border-bottom: 1px solid white;
+// }

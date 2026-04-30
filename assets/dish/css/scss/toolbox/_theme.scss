@@ -1,0 +1,323 @@
+// FONTS
+$font-default: 'body', Verdana, 'Helvetica Neue', Arial, sans-serif;
+$font-light: 'light', 'Helvetica', Arial, sans-serif;
+$font-reg: 'reg', 'Helvetica', Arial, sans-serif;
+
+// IMG's
+$logo--light: url("/assets/img/logos/new/kaneism-logo--dark.svg");
+$logo--dark: url("/assets/img/logos/new/kaneism-logo--light.svg");
+
+$logo-k--light: url("/assets/img/content/k-piece--light.svg");
+$logo-k--dark: url("/assets/img/content/k-piece--dark.svg");
+
+$logo-ss--light: url("/assets/img/logos/logo-light.svg");
+$logo-ss--dark: url("/assets/img/logos/logo-dark.svg");
+
+$logo-icon--light: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI1MzAiIGhlaWdodD0iNTMwIiB2aWV3Qm94PSIzMC40NCA2MDkuMTQgNTMwIDUzMCI+PHBhdGggZmlsbD0iIzMwMyIgZD0iTTQ4Mi43NiA2ODYuODNjLTUwLjAzLTUwLjAzLTExNi41NS03Ny41OS0xODcuMzEtNzcuNTlzLTEzNy4yOCAyNy41NS0xODcuMzEgNzcuNTlDNTguMSA3MzYuODYgMzAuNTUgODAzLjM4IDMwLjU1IDg3NC4xNHMyNy41NSAxMzcuMjggNzcuNTkgMTg3LjMxYzUwLjAzIDUwLjAzIDExNi41NSA3Ny41OSAxODcuMzEgNzcuNTlzMTM3LjI4LTI3LjU1IDE4Ny4zMS03Ny41OWM1MC4wMy01MC4wMyA3Ny41OS0xMTYuNTUgNzcuNTktMTg3LjMxLS4wMS03MC43Ni0yNy41Ni0xMzcuMjgtNzcuNTktMTg3LjMxem0tMzYzLjA3IDM2My4wNmMtNDYuOTUtNDYuOTUtNzIuOC0xMDkuMzYtNzIuOC0xNzUuNzUgMC02NS42NyAyNS4zMS0xMjcuNDQgNzEuMjktMTc0LjIgMS4yMyAxMS42NSAxMS42IDE5LjE1IDExLjYgMTkuMTUgNjAuOTkgNTcuMDIgOTkuMTMgMTE1LjMgMTIyLjU3IDE2MS43NC0yLjMgMy4zOC05LjEzIDE0LjQ2LTUuNDIgMjEuNDYgMCAwIDUuODMgOS45MyAxOC42MSA2Ljc5IDE2Ljg5IDM5LjM3IDIxLjY3IDY1IDIxLjY3IDY1IDkuMjYgMjAuMTMgMjEuNDEgMTIuODEgMjEuNDIgMTIuOCAxMy4zLTYuNzEgOS4yNi0yMC43NCA5LjI2LTIwLjc0LTYuMDYtMjUuMDctMTQuMTMtNDkuMjctMjMuNDMtNzIuMjYgMjEuMTEtMTIuMDEgNTQuNjctMzEuMzkgNzYuMTEtNDUuMjQgMCAwLTI2Ljc4IDQ5LjU1LTI4Ljg1IDE1OC40LTIxLjM1LTMuODMtNDYuMDYtNy43MS03NC42MS0xMS40OSAwIDAtNjYuODUtMTAuMjQtNjguNzQgNi45OSAwIDAtMTAgMTQuOTIgNTAuNSAyMS4yNSAwIDAgNDQuNDggNi44MSA5MyAxNy4xLjQ1IDE2LjUzIDEuNDYgMzQuMTcgMy4xNiA1Mi45OSAwIDAgLjczIDE0LjYxIDguMzQgMjIuMDRhMjUwLjI3NiAyNTAuMjc2IDAgMCAxLTU3LjkzIDYuNzdjLTY2LjM4IDAtMTI4LjgtMjUuODUtMTc1Ljc1LTcyLjh6bTI2MC43NyA0MS4yOHMtMi4xMy0xNi41OC0zLjE1LTQyLjIxYzguMjUgMi4wMiAxNi4zMyA0LjEyIDI0LjAzIDYuMjggMCAwIDI4LjUyIDguNTYgNTEuOTggOC45OSAwIDAgLjg5LjA0IDIuMjctLjAyLTIyLjk2IDE5LjQxLTQ4Ljg5IDM0LjI5LTc2LjcxIDQ0LjE4IDEuNTMtNC4xMiAyLjMyLTkuNjggMS41OC0xNy4yMnptOTEuOTktNDIuNTdjLS41LTMuMy0yLjQxLTYuNDUtNy4zOC04LjU0IDAgMC0yMC44Ny0xMS45LTg4LjIyLTI2LjE4LjctNTIuODYgOC4xMy0xMjIuMzcgMzcuMzMtMTczLjc1IDAgMCAxNy43MS0yNC43IDIuODktNDAuNTQgMCAwLTExLjI0LTE0LjgyLTM1Ljc2LTEuMDIgMCAwLTYxLjMxIDM4LjMyLTgwLjcyIDUxLjA5IDAgMCAxNy44OC02Ni43NiAxNi44Ni04Ni44NiAwIDAgMy4wNy0yNC4xOS0xNC44Mi0yMC45NSAwIDAtMjAuNiAxLjg4LTIwLjk1IDIwLjk1IDAgMCAuNiAzNC4xNS0xMi40MyA3Ni41NC00OC4xOC05Mi42Ny0xMDcuNjMtMTU1LjA0LTEwNy42My0xNTUuMDQtNS40Mi01LjE4LTEwLjM0LTguMS0xNC43Mi05LjUgNDIuNjgtMzEuOTQgOTQuMjgtNDkuMjIgMTQ4LjU0LTQ5LjIyIDY2LjM5IDAgMTI4LjggMjUuODUgMTc1Ljc1IDcyLjggNDYuOTQgNDYuOTQgNzIuOCAxMDkuMzYgNzIuOCAxNzUuNzUgMCA2NS44LTI1LjQgMTI3LjY4LTcxLjU0IDE3NC40N3oiLz48Y2lyY2xlIGN4PSIyMDUuNDIiIGN5PSI5NDMuNjMiIHI9IjIwLjk1IiBmaWxsPSIjMzAzIi8+PGNpcmNsZSBjeD0iNDI0Ljc4IiBjeT0iOTY1Ljg2IiByPSIyMC4xOCIgZmlsbD0iIzMwMyIvPjwvc3ZnPg==");
+
+$logo-icon--dark: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI1MzAiIGhlaWdodD0iNTMwIiB2aWV3Qm94PSIzMC40NCA2MDkuMTQgNTMwIDUzMCI+PHBhdGggZmlsbD0iI2IwYWVmZiIgZD0iTTQ4Mi43NiA2ODYuODNjLTUwLjAzLTUwLjAzLTExNi41NS03Ny41OS0xODcuMzEtNzcuNTlzLTEzNy4yOCAyNy41NS0xODcuMzEgNzcuNTlDNTguMSA3MzYuODYgMzAuNTUgODAzLjM4IDMwLjU1IDg3NC4xNHMyNy41NSAxMzcuMjggNzcuNTkgMTg3LjMxYzUwLjAzIDUwLjAzIDExNi41NSA3Ny41OSAxODcuMzEgNzcuNTlzMTM3LjI4LTI3LjU1IDE4Ny4zMS03Ny41OWM1MC4wMy01MC4wMyA3Ny41OS0xMTYuNTUgNzcuNTktMTg3LjMxLS4wMS03MC43Ni0yNy41Ni0xMzcuMjgtNzcuNTktMTg3LjMxem0tMzYzLjA3IDM2My4wNmMtNDYuOTUtNDYuOTUtNzIuOC0xMDkuMzYtNzIuOC0xNzUuNzUgMC02NS42NyAyNS4zMS0xMjcuNDQgNzEuMjktMTc0LjIgMS4yMyAxMS42NSAxMS42IDE5LjE1IDExLjYgMTkuMTUgNjAuOTkgNTcuMDIgOTkuMTMgMTE1LjMgMTIyLjU3IDE2MS43NC0yLjMgMy4zOC05LjEzIDE0LjQ2LTUuNDIgMjEuNDYgMCAwIDUuODMgOS45MyAxOC42MSA2Ljc5IDE2Ljg5IDM5LjM3IDIxLjY3IDY1IDIxLjY3IDY1IDkuMjYgMjAuMTMgMjEuNDEgMTIuODEgMjEuNDIgMTIuOCAxMy4zLTYuNzEgOS4yNi0yMC43NCA5LjI2LTIwLjc0LTYuMDYtMjUuMDctMTQuMTMtNDkuMjctMjMuNDMtNzIuMjYgMjEuMTEtMTIuMDEgNTQuNjctMzEuMzkgNzYuMTEtNDUuMjQgMCAwLTI2Ljc4IDQ5LjU1LTI4Ljg1IDE1OC40LTIxLjM1LTMuODMtNDYuMDYtNy43MS03NC42MS0xMS40OSAwIDAtNjYuODUtMTAuMjQtNjguNzQgNi45OSAwIDAtMTAgMTQuOTIgNTAuNSAyMS4yNSAwIDAgNDQuNDggNi44MSA5MyAxNy4xLjQ1IDE2LjUzIDEuNDYgMzQuMTcgMy4xNiA1Mi45OSAwIDAgLjczIDE0LjYxIDguMzQgMjIuMDRhMjUwLjI3NiAyNTAuMjc2IDAgMCAxLTU3LjkzIDYuNzdjLTY2LjM4IDAtMTI4LjgtMjUuODUtMTc1Ljc1LTcyLjh6bTI2MC43NyA0MS4yOHMtMi4xMy0xNi41OC0zLjE1LTQyLjIxYzguMjUgMi4wMiAxNi4zMyA0LjEyIDI0LjAzIDYuMjggMCAwIDI4LjUyIDguNTYgNTEuOTggOC45OSAwIDAgLjg5LjA0IDIuMjctLjAyLTIyLjk2IDE5LjQxLTQ4Ljg5IDM0LjI5LTc2LjcxIDQ0LjE4IDEuNTMtNC4xMiAyLjMyLTkuNjggMS41OC0xNy4yMnptOTEuOTktNDIuNTdjLS41LTMuMy0yLjQxLTYuNDUtNy4zOC04LjU0IDAgMC0yMC44Ny0xMS45LTg4LjIyLTI2LjE4LjctNTIuODYgOC4xMy0xMjIuMzcgMzcuMzMtMTczLjc1IDAgMCAxNy43MS0yNC43IDIuODktNDAuNTQgMCAwLTExLjI0LTE0LjgyLTM1Ljc2LTEuMDIgMCAwLTYxLjMxIDM4LjMyLTgwLjcyIDUxLjA5IDAgMCAxNy44OC02Ni43NiAxNi44Ni04Ni44NiAwIDAgMy4wNy0yNC4xOS0xNC44Mi0yMC45NSAwIDAtMjAuNiAxLjg4LTIwLjk1IDIwLjk1IDAgMCAuNiAzNC4xNS0xMi40MyA3Ni41NC00OC4xOC05Mi42Ny0xMDcuNjMtMTU1LjA0LTEwNy42My0xNTUuMDQtNS40Mi01LjE4LTEwLjM0LTguMS0xNC43Mi05LjUgNDIuNjgtMzEuOTQgOTQuMjgtNDkuMjIgMTQ4LjU0LTQ5LjIyIDY2LjM5IDAgMTI4LjggMjUuODUgMTc1Ljc1IDcyLjggNDYuOTQgNDYuOTQgNzIuOCAxMDkuMzYgNzIuOCAxNzUuNzUgMCA2NS44LTI1LjQgMTI3LjY4LTcxLjU0IDE3NC40N3oiLz48Y2lyY2xlIGN4PSIyMDUuNDIiIGN5PSI5NDMuNjMiIHI9IjIwLjk1IiBmaWxsPSIjYjBhZWZmIi8+PGNpcmNsZSBjeD0iNDI0Ljc4IiBjeT0iOTY1Ljg2IiByPSIyMC4xOCIgZmlsbD0iI2IwYWVmZiIvPjwvc3ZnPg==");
+
+$bg-splat--light: url("/assets/img/bg/splat-main-light.svg");
+$bg-splat--dark: url("/assets/img/bg/splat-main-dark.svg");
+
+$bg-spray--light: url("/assets/img/bg/splat-corner.jpg");
+$bg-spray--dark: url("/assets/img/bg/splat-corner-dark.jpg");
+// $bg-spray--light: url("/assets/img/bg/splat-corner.webp");
+// $bg-spray--dark: url("/assets/img/bg/splat-corner-dark.webp"); 
+
+
+///// LEGEND LIGHT THEME /////
+/// Color 1: #ffffff - White
+/// Color 2: #5a5a5a - text color
+/// Color 3: #56005b - The purple
+/// 
+
+///// LEGEND DARK THEME /////
+/// Color 1: #000000 - Black
+/// Color 2: #bdbdbd - text color
+/// Color 3: #b0aeff - The Purple
+/// #181723 - Dark Purple
+
+$transparent: transparent;
+
+// Colors
+$swatch-default--light: #fff;
+$swatch-default--dark: #000;
+$swatch-base--light: #5a5a5a;
+$swatch-base--dark: #bdbdbd;
+
+$ui-accent--light: #dbdbdb;
+$ui-accent--dark: #b0aeff;
+
+$ui-selected--light: #d3d2ff;
+$ui-selected--dark: #1d1d28;
+
+$swatch-primary--light: #fefefe; // header and body BG
+$swatch-primary--dark: #1d1d28; // header and body BG
+
+$swatch-secondary--light: #f8f8f8; // nav bg
+$swatch-secondary--dark: #262631; // nav bg
+
+$swatch-dark--accent: #181723;
+
+// GENERAL COLOURS
+$color-black: #000;
+$color-white: #fff;
+
+$swatch-accent--light: #56005b;
+$swatch-accent--dark: #b0aeff;
+
+// Utilize swatches above
+$swatch-links--light: $swatch-accent--light;
+$swatch-links--dark: $swatch-accent--dark;
+
+//Buttons
+$button-bg--light: #f8f8f8;
+$button-text--light: #56005b;
+$button-hover--light: #dbdbdb;
+$button-hovertext--light: #f8f8f8;
+$button-bgselected--light: #dbdbdb;
+// $button-off--light: ;
+
+$button-bg--dark: #262631;
+$button-text--dark: #fefefe;
+$button-hover--dark: #181723;
+$button-hovertext--dark: #01f3d8;
+$button-bgselected--dark: #56005b ;
+// $button-off--dark: ;
+
+
+$bling--light: #F1B33B;
+$bling--dark: #01f3d8;
+
+$callout--light: #bb5800;
+$callout--dark: #01f3d8;
+
+
+
+
+$themes: (
+    'light': (
+        // IMG's
+        'bg-splat': $bg-splat--light,
+        'bg-spray': $bg-spray--light,  
+        'logo': $logo--dark,
+        'logo-icon': $logo-icon--light,
+        'logo-ss': $logo-ss--dark, 
+        'logo-k': $logo-k--light,
+
+        'swatch-default': $swatch-default--light,
+        'swatch-text': $swatch-base--light,
+
+        // CART BUBBLE
+        'cart-bubble-border': $bling--light,
+        'cart-bubble-bg': $ui-accent--light,
+        'cart-bubble-link': $swatch-accent--light,
+
+
+        // Background colours
+        'swatch-primary': $swatch-primary--light,
+        'swatch-secondary': $swatch-secondary--light,
+
+        'swatch-accent': $swatch-accent--light,
+        'swatch-links': $swatch-links--light,
+        'swatch-link-hovers': $callout--light,
+
+        // Headings
+        //'headings': $swatch-base--light,
+
+        'notices': $color-white,
+
+        'bling-primary': $color-black,
+
+        'ui-accent': $ui-accent--light,
+
+        'ui-selected-focus': $swatch-primary--dark,
+
+        'callouts': $callout--light,
+
+        // Borders
+        'dotted-borders': $swatch-accent--light,
+        'ui-borders': $ui-selected--light,
+
+        // FORMS
+        'form-borders': $ui-accent--light,
+        'form-placeholder': $swatch-base--light,
+        'disabled-text': $swatch-base--light,
+        'disabled-bg': $ui-accent--light,
+
+        'button-hover': $ui-selected--light,
+        'buttons': $swatch-accent--light,
+
+        'img-borders': $ui-accent--light,
+
+        'btn-bg': $button-bg--light,
+        'btn-text': $button-text--light,
+        'btn-hover': $button-hover--light,
+        'btn-hovertext': $button-hovertext--light,
+        'btn-bgselected': $button-bgselected--light,
+
+        'search-border': $ui-accent--light,
+    ),
+
+    'dark': (
+        // IMG's
+        'bg-splat': $bg-splat--dark,
+        'bg-spray': $bg-spray--dark,
+        'logo': $logo--light,
+        'logo-icon': $logo-icon--dark,
+        'logo-ss': $logo-ss--light,
+        'logo-k': $logo-k--dark,
+
+        'swatch-default': $swatch-dark--accent,
+        'swatch-text': $swatch-base--dark,
+
+        // CART BUBBLE
+        'cart-bubble-border': $swatch-accent--dark,
+        'cart-bubble-bg': $ui-selected--dark,
+        'cart-bubble-link': $callout--dark,
+
+        // Background colours
+        'swatch-primary': $swatch-primary--dark,
+        'swatch-secondary': $swatch-secondary--dark,
+
+        'swatch-accent': $swatch-accent--dark,
+        'swatch-links': $swatch-links--dark,
+        'swatch-link-hovers': $callout--dark,
+
+        // Headings
+        'headings': $ui-selected--light,
+
+        'color-black': $color-black,
+        'color-white': $color-white,
+
+        // Borders
+        'dotted-borders': $swatch-accent--dark,
+        'ui-borders': $swatch-base--light,
+
+        'bling-primary': $bling--dark,
+
+        'ui-accent': $ui-accent--dark,
+        'ui-selected-focus': $ui-selected--light,
+
+        'callouts': $callout--dark,
+
+        'form-borders': $ui-accent--dark,
+        'form-placeholder': $swatch-base--dark,
+        'disabled-text': $swatch-base--dark,
+        'disabled-bg': $ui-accent--dark,
+
+        'button-hover': $ui-selected--dark,
+        'buttons': $swatch-secondary--dark,
+        'notices': $color-white,
+
+        'img-borders': $swatch-secondary--dark,
+
+        // buttons
+        'btn-bg': $button-bg--dark,
+        'btn-text': $button-text--dark,
+        'btn-hover': $button-hover--dark,
+        'btn-hovertext': $button-hovertext--dark,
+        'btn-bgselected': $button-bgselected--dark,
+
+        'search-border': $swatch-default--dark
+
+    )
+);
+
+
+// BG COLOURS
+// $bg-primary--light: #f8f8f8;
+// $bg-primary--dark: #070707;
+
+// THEME COLOURS
+
+// Default Theme
+//$brand-primary: #222; 		// Dark Grey
+//$brand-secondary: #444; 	// Grey
+//$body-color: #5a5a5a;   	// MED grey
+//$link-color: #56005b; 			// purple
+//$link-hover: #bb5800;  		// Grey
+//$callout: #cf86ee; 			// callout purple
+
+
+
+$core-font-size: 1rem;
+$core-line-height: 1.25 * $core-font-size;
+
+$text-settings: (
+  'xs': (
+    font-size: .75rem, // 12px
+    line-height: $core-line-height
+  ),
+  'sm': (
+    font-size: .875rem, // 14px
+    line-height: $core-line-height
+  ),
+  'base': (
+    font-size: 1rem, // 16px
+    line-height: $core-line-height
+  ),
+  'md': (
+    font-size: 1.125rem, // 18px
+    line-height: $core-line-height * 2
+  ),
+  'lg': (
+    font-size: 1.25rem, // 20px
+    line-height: $core-line-height * 2
+  ),
+  'xl': (
+    font-size: 1.5rem, // 24px
+    line-height: $core-line-height * 2
+  )
+);
+
+// font theme function
+@function text-scale($level) {
+  @return map-get(map-get($text-settings, $level), 'font-size');
+}
+
+@function line-height($level) {
+  @return map-get(map-get($text-settings, $level), 'line-height');
+}
+
+@mixin text-setting($level) {
+  font-size: text-scale($level);
+  line-height: line-height($level);
+}
+
+
+
+// $primary-color-dark: "primary-color-dark";
+// $primary-color: "primary-color";
+// $primary-color-light: "primary-color-light";
+// $primary-color-text: "primary-color-text";
+// $accent-color: "accent-color";
+// $primary-text-color: "primary-text-color";
+// $secondary-text-color: "secondary-text-color";
+// $divider-color: "divider-color";
+// $general-background: "general-background";
+// $general-background-light: "general-background-light";
+
+// $themes: (
+//     default: (
+//             logo: url("../images/brand/logo_vertical.svg"),
+//             bg: $color-white,
+//             card-bg: $bg--card--light,
+//             text: $text--light,
+//             text-secondary: $text--2--light,
+//             link: $brand--blue--light,
+//             hover: $hover--light,
+//             border: $border--light
+//     ),
+//     dark: (
+//             logo: url("../images/brand/logo_vertical--invert.svg"),
+//             bg: $color-black,
+//             card-bg: $bg--card--dark,
+//             text: $text--dark,
+//             text-secondary: $text--2--dark,
+//             link: $brand--blue--dark,
+//             hover: $hover--dark,
+//             border: $border--dark
+//     ),
+// );

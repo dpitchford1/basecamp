@@ -10,6 +10,8 @@
  * @package basecamp
  */
 
+declare(strict_types=1);
+
 namespace Basecamp\Admin;
 
 // Suppress Email Address Encoder admin notices (filter retained for child-theme overrides).
@@ -18,7 +20,7 @@ define( 'EAE_DISABLE_NOTICES', apply_filters( 'air_helper_remove_eae_admin_bar',
 /**
  * Encapsulates all admin/backend customizations for the Basecamp theme.
  */
-class Admin {
+final class Admin {
 
 		/**
 		 * Register all admin hooks.
@@ -35,6 +37,7 @@ class Admin {
 			add_filter( 'login_headerurl', [ $this, 'login_url' ] );
 			add_filter( 'login_headertitle', [ $this, 'login_title' ] );
 			add_action( 'admin_bar_menu', [ $this, 'replace_howdy' ] );
+			add_action( 'admin_bar_menu', [ $this, 'add_view_in_browser_node' ], 100 );
 			add_action( 'wp_before_admin_bar_render', [ $this, 'remove_comments_from_admin_bar' ] );
 			add_filter( 'admin_footer_text', [ $this, 'custom_admin_footer' ] );
 			add_filter( 'update_footer', '__return_empty_string', 11 );
@@ -112,7 +115,7 @@ class Admin {
 		 * @return void
 		 */
 		public function custom_admin_footer(): void {
-			_e( '<span id="footer-thankyou">Built with <a href="https://github.com/joshuaiz/basecamp" target="_blank">Basecamp</a>.', 'basecamp' );
+			_e( '<span id="footer-thankyou">Built with <a href="https://kaneism.com" target="_blank">Basecamp</a>.', 'basecamp' );
 		}
 
 		/**
@@ -169,7 +172,7 @@ class Admin {
 		 * @return array
 		 */
 		public function cleanup_mce( array $args ): array {
-			$args['block_formats'] = 'Paragraph=p;Heading 3=h3;Heading 4=h4; Heading 5=h5; Heading 6=h6';
+			$args['block_formats'] = 'Paragraph=p;Heading 2=h2;Heading 3=h3;Heading 4=h4; Heading 5=h5; Heading 6=h6';
 			return $args;
 		}
 
@@ -243,7 +246,46 @@ class Admin {
 		 */
 		public function disable_block_editor_everywhere( bool $use_block_editor, string $post_type ): bool {
 			return false;
-	}
+		}
+
+		/**
+		 * Add a "View in browser" shortcut to the admin bar when editing a post.
+		 *
+		 * Adds an ↗ link that opens the post's live permalink in a new tab,
+		 * making it quick to preview changes without leaving the edit screen.
+		 *
+		 * @param \WP_Admin_Bar $wp_admin_bar
+		 * @return void
+		 */
+		public function add_view_in_browser_node( \WP_Admin_Bar $wp_admin_bar ): void {
+			if ( ! is_admin() ) {
+				return;
+			}
+			if ( ! isset( $_GET['post'], $_GET['action'] ) || $_GET['action'] !== 'edit' ) {
+				return;
+			}
+
+			$post_id = (int) $_GET['post'];
+			$post    = get_post( $post_id );
+			if ( ! $post || ! current_user_can( 'edit_post', $post_id ) ) {
+				return;
+			}
+
+			$url = get_permalink( $post_id );
+			if ( ! $url ) {
+				return;
+			}
+
+			$wp_admin_bar->add_node( [
+				'id'    => 'basecamp-view-in-browser',
+				'title' => '&#x2197; View in browser',
+				'href'  => $url,
+				'meta'  => [
+					'target' => '_blank',
+					'rel'    => 'noopener noreferrer',
+				],
+			] );
+		}
 }
 
 new Admin();

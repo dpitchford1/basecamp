@@ -94,7 +94,7 @@ wp media regenerate --yes
 ```
 
 ### 7. Verify WebP conversion is working
-- Go to **Tools → WebP Conversion** in wp-admin
+- Go to **Tools → Image Tools** in wp-admin and open the **WebP Conversion** tab
 - The page should confirm GD or ImageMagick WebP support is available
 - Upload a test image and check `/wp-content/uploads/` for a `.webp` file alongside it
 

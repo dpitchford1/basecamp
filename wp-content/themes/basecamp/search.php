@@ -1,9 +1,9 @@
 <?php get_header(); ?>
 
-<main id="main" class="search-results">
+<main id="main-content" class="search-results">
 
 	<header class="search-results__header">
-		<h1 class="search-results__title">
+		<h2 class="search-results__title">
 			<?php
 			if ( get_search_query() ) {
 				printf(
@@ -15,7 +15,7 @@
 				esc_html_e( 'Search Results', 'basecamp' );
 			}
 			?>
-		</h1>
+		</h2>
 	</header>
 
 	<?php if ( have_posts() ) : ?>

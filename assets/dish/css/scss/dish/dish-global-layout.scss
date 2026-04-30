@@ -1,0 +1,16 @@
+@use 'dish-toolbox' as *;
+@use "dish-global-layout/utilities" as *;
+@use "dish-global-layout/components/heros" as *;
+@use "dish-global-layout/components/featured-projects" as *;
+@use "dish-global-layout/components/carousels" as *;
+@use "dish-global-layout/components/cards" as *;
+@use "dish-global-layout/components/content-menus" as *;
+@use "dish-global-layout/components/forms" as *;
+@use "dish-global-layout/components/buttons" as *;
+@use "dish-global-layout/components/video-player" as *;
+@use "dish-global-layout/news" as *;
+@use "dish-global-layout/cookie-consent" as *;
+@use "dish-global-layout/contact-form7" as *;
+@use "dish-global-layout/responsive";
+
+@include responsive.all(); 

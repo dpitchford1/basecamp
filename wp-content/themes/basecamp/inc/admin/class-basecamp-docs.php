@@ -32,6 +32,7 @@ class Docs {
 		'content-team' => 'Content Team',
 		'developer'    => 'Developer',
         'planning'    => 'Planning',
+        'plugin-audit'    => 'Plugin Audit',
 	];
 
 	// =========================================================================
@@ -49,8 +50,8 @@ class Docs {
 
 	public static function register_menu(): void {
 		add_menu_page(
-			__( 'Basecamp Docs', 'basecamp' ),
-			__( 'Basecamp Docs', 'basecamp' ),
+			__( 'Theme Docs', 'basecamp' ),
+			__( 'Theme Docs', 'basecamp' ),
 			'read',
 			self::MENU_SLUG,
 			[ __CLASS__, 'render_page' ],

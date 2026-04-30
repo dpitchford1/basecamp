@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * WebP image support and frontend output functions
  *
@@ -15,30 +17,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Check if the browser supports WebP images.
  *
- * Uses the HTTP_ACCEPT header and user agent sniffing for fallback.
+ * Primary: HTTP Accept header (reliable for direct requests).
+ * Fallback: UA string for environments where Accept is stripped by a proxy/CDN.
+ * In 2026, every major browser supports WebP; only legacy IE / EdgeHTML don't.
  *
  * @return bool Whether the browser supports WebP.
  */
-function basecamp_webp_is_supported() {
-	// Check for Accept header (most reliable)
-	if ( isset( $_SERVER['HTTP_ACCEPT'] ) && strpos( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false ) {
+function basecamp_webp_is_supported(): bool {
+	// Primary: Accept header
+	if ( isset( $_SERVER['HTTP_ACCEPT'] ) && str_contains( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) ) {
 		return true;
 	}
 
-	// Fallback: Check user agent for known WebP compatible browsers
+	// Fallback: UA-based detection for reverse-proxy/CDN setups that strip Accept
 	if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-
-		// Chrome 9+, Opera 12+, Firefox 65+, Edge 18+, Safari 14+
-		if (
-			( strpos( $user_agent, 'Chrome/' ) !== false && preg_match( '/Chrome\/([0-9]+)/', $user_agent, $matches ) && (int) $matches[1] >= 9 ) ||
-			( strpos( $user_agent, 'Opera/' ) !== false ) ||
-			( strpos( $user_agent, 'Firefox/' ) !== false && preg_match( '/Firefox\/([0-9]+)/', $user_agent, $matches ) && (int) $matches[1] >= 65 ) ||
-			( strpos( $user_agent, 'Edge/' ) !== false && preg_match( '/Edge\/([0-9]+)/', $user_agent, $matches ) && (int) $matches[1] >= 18 ) ||
-			( strpos( $user_agent, 'Safari/' ) !== false && preg_match( '/Version\/([0-9]+)/', $user_agent, $matches ) && (int) $matches[1] >= 14 )
-		) {
-			return true;
+		$ua = $_SERVER['HTTP_USER_AGENT'];
+		// Legacy IE and EdgeHTML (pre-Chromium Edge) have no WebP support
+		if ( str_contains( $ua, 'Trident/' ) || str_contains( $ua, 'MSIE ' ) ) {
+			return false;
 		}
+		// All other current engines (Blink, Gecko, WebKit 14+) support WebP
+		return (bool) preg_match( '/Chrome\/|Firefox\/|Edg\/|OPR\/|SamsungBrowser\/|Safari\//', $ua );
 	}
 
 	return false;
@@ -47,18 +46,28 @@ function basecamp_webp_is_supported() {
 /**
  * Check if a WebP version of an image exists.
  *
+ * Uses a static per-request cache to avoid repeated file_exists() calls
+ * for the same URL within a single page load.
+ *
  * @param string $image_url URL of the original image.
  * @return bool|string WebP image URL if exists, false otherwise.
  */
 function basecamp_get_webp_image( $image_url ) {
+	// Per-request cache: avoids repeated file_exists() calls for the same URL.
+	static $cache = [];
+
+	if ( array_key_exists( $image_url, $cache ) ) {
+		return $cache[ $image_url ];
+	}
+
 	// Skip if URL is empty or already a WebP image
 	if ( empty( $image_url ) || strpos( $image_url, '.webp' ) !== false ) {
-		return false;
+		return $cache[ $image_url ] = false;
 	}
 
 	// Skip SVG images
 	if ( strpos( $image_url, '.svg' ) !== false ) {
-		return false;
+		return $cache[ $image_url ] = false;
 	}
 
 	// Convert URL to file path
@@ -67,7 +76,7 @@ function basecamp_get_webp_image( $image_url ) {
 
 	// Check if original file exists
 	if ( ! file_exists( $file_path ) ) {
-		return false;
+		return $cache[ $image_url ] = false;
 	}
 
 	// Get file extension
@@ -82,18 +91,18 @@ function basecamp_get_webp_image( $image_url ) {
 	}
 
 	// If either WebP version exists, return the corresponding URL
-	if (file_exists($webp_path)) {
-		if (strpos($webp_path, $file_path . '.webp') !== false) {
+	if ( file_exists( $webp_path ) ) {
+		if ( strpos( $webp_path, $file_path . '.webp' ) !== false ) {
 			// Appended format
 			$webp_url = $image_url . '.webp';
 		} else {
 			// Replacement format
-			$webp_url = str_replace('.' . $path_parts['extension'], '.webp', $image_url);
+			$webp_url = str_replace( '.' . $path_parts['extension'], '.webp', $image_url );
 		}
-		return $webp_url;
+		return $cache[ $image_url ] = $webp_url;
 	}
 
-	return false;
+	return $cache[ $image_url ] = false;
 }
 
 /**
@@ -452,30 +461,3 @@ add_filter('the_content', function($content) {
 		$content
 	);
 }, 999);
-
-/**
- * Debug function to log WebP conversion activity.
- * Only active when WP_DEBUG is true.
- *
- * @param string $message The message to log.
- * @param mixed $data Additional data to log.
- */
-function basecamp_webp_debug_log($message, $data = null) {
-	if (defined('WP_DEBUG') && WP_DEBUG) {
-		$context = is_admin() ? 'ADMIN' : 'FRONTEND';
-		global $pagenow;
-		$page = isset($pagenow) ? $pagenow : 'unknown';
-		$log_message = sprintf('[WEBP-%s/%s] %s', $context, $page, $message);
-		if ($data !== null) {
-			$log_message .= ' - Data: ' . (is_array($data) || is_object($data) ? json_encode($data) : $data);
-		}
-		error_log($log_message);
-	}
-}
-
-// Uncomment this to debug WebP conversion activity
-// add_action('init', function() {
-//     basecamp_webp_debug_log('WebP module initialized');
-// });
-
-

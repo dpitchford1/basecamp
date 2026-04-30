@@ -26,13 +26,18 @@ wp-content/themes/basecamp/
   inc/
     class-basecamp.php       Core setup: menus, image sizes, theme supports
     admin/                   Admin area: login styles, dashboard tweaks, docs, theme settings
+      basecamp-media.php     Strips auto-titles from new uploads; bulk-clear tool
     core/                    Scheduled events
     development/             Dev-only tools (local IP gated)
     frontend/                SVG icons, frontend class, cookie consent
+      class-basecamp-toast.php          Dismissable announcement bar
+      basecamp-page-helpers.php         Page conditional helpers
+      basecamp-subnav.php               Contextual child/sibling subnav
     img-optimization/        WebP conversion (GD, Imagick, cwebp)
+      basecamp-thumb-regen.php          Thumbnail regeneration tool (tab in Image Tools hub)
     rest/                    REST API endpoints
     seo/                     Title, meta description, social meta, schema
-    theme-functions/         Analytics, blog rename, custom helpers
+    theme-functions/         Analytics, meta link list, CPT scaffold, category URL rewrite
 
   template-parts/            Reusable template partials
 
@@ -69,13 +74,13 @@ CSS is referenced in `header.php` via root-relative paths (`/assets/css/build/..
 
 Modules are loaded in this order:
 
-1. Core theme class (`inc/class-basecamp.php`)
-2. **Theme Settings** (`inc/admin/class-basecamp-settings.php`) — loaded before all other modules so `Basecamp\Admin\Settings::get()` is available everywhere (aliased as `Basecamp_Settings` for back-compat)
-3. Frontend classes (SVG icons, frontend helpers, remove-bloat, cookie consent)
-4. Admin-only modules (wrapped in `is_admin()`)
+1. **Theme Settings** (`inc/admin/class-basecamp-settings.php`) — loaded first so `Basecamp\Admin\Settings::get()` is available to all subsequent modules (aliased as `Basecamp_Settings` for back-compat)
+2. Core theme class (`inc/class-basecamp.php`) — theme supports, menus, image sizes
+3. Frontend classes (SVG icons, frontend helpers, remove-bloat, cookie consent, **toast**, **page helpers**, **subnav**)
+4. Admin-only modules (wrapped in `is_admin()`) — includes `basecamp-media.php` for attachment title stripping
 5. SEO modules (`class-basecamp-seo.php` bootstraps title, meta, social, schema)
-6. Theme functions (meta link list, analytics)
-7. Image optimization (WebP — skipped entirely when disabled in Theme Settings)
+6. Theme functions (meta link list, analytics, CPT scaffold and category URL rewrite — both disabled by default)
+7. Image optimization (WebP + thumbnail regen — skipped entirely when disabled in Theme Settings)
 8. REST endpoints
 9. Scheduled events (cron)
 10. Development tools (localhost IP gate)

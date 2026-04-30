@@ -32,6 +32,17 @@ Hard-cropped to exactly 3:4 ratio. Used with `srcset` / `<picture>` to serve a p
 
 > **Note:** The handle spelling `portait` (single `r`) is intentional — matches the existing database metadata for uploaded images. Do not rename.
 
+### Square Sizes — 1:1, Hard Crop
+
+Hard-cropped to exact square. Used for avatars, logos, and icon-style thumbnails.
+
+| Handle | Width | Height |
+|---|---|---|
+| `basecamp-img-sq-xs` | 50 | 50 |
+| `basecamp-img-sq-sm` | 175 | 175 |
+| `basecamp-img-sq-md` | 350 | 350 |
+| `basecamp-img-sq-lg` | 500 | 500 |
+
 ### Using Image Sizes in Templates
 
 The simplest output — WordPress auto-generates `srcset` from all matching registered sizes. The WebP filter replaces every URL transparently, so no extra code is needed for WebP.
@@ -228,11 +239,11 @@ Conversion uses the server's best available method (checked in order):
 - PHP **ImageMagick** (`Imagick` extension)
 - The **`cwebp`** command-line binary
 
-If none are available, conversion silently skips and only the original is stored. Check **Tools → WebP Conversion** to verify server capability.
+If none are available, conversion silently skips and only the original is stored. Check **Tools → Image Tools → WebP Conversion** tab to verify server capability.
 
 ### Bulk Conversion Tool
 
-**Admin location:** Tools → WebP Conversion  
+**Admin location:** Tools → Image Tools → *WebP Conversion* tab  
 **Capability required:** `manage_options`
 
 For images uploaded before this theme was installed (or before the WebP module was active), use the bulk conversion tool. It processes one image per AJAX request to avoid timeouts, tracks progress in two custom database tables, and can be paused and resumed.
@@ -289,9 +300,7 @@ All filters skip in admin context (except during AJAX calls).
 
 The function converts the URL to a filesystem path, checks for the `.webp` file, and returns the WebP URL if found. Returns `false` if not found, URL is already `.webp`, or the URL is an SVG.
 
----
-
-## Opting Out of WebP
+> **Per-request static cache:** `basecamp_get_webp_image()` uses a static variable to cache `file_exists()` results. Each unique URL is checked on disk at most once per page load — subsequent calls with the same URL return the cached result immediately.
 
 ### Per-Element: CSS Classes
 
@@ -319,6 +328,30 @@ WebP replacement is automatically suppressed on any post that contains a `[galle
 ### Admin Save Protection
 
 The conversion filter skips execution during `post.php` and `post-new.php` admin page loads (outside of AJAX) to prevent corrupting attachment metadata during saves.
+
+---
+
+## Thumbnail Regeneration Tool
+
+**Admin location:** Tools → Image Tools → *Regenerate Thumbnails* tab  
+**File:** `inc/img-optimization/basecamp-thumb-regen.php`
+
+AJAX-driven batch rebuild of WordPress attachment metadata. Processes one attachment per request. Progress is stored in the `basecamp_thumb_regen_progress` option and persists across page loads — a batch can be paused and resumed.
+
+Use this tool after registering any new image size to ensure all existing uploads have the new size generated without needing WP-CLI access.
+
+---
+
+## Media Attachment Titles
+
+**File:** `inc/admin/basecamp-media.php`
+
+When WordPress generates attachment metadata on upload, it sets the attachment title to the filename (e.g. `my-photo-1024x768`). This module removes that behaviour.
+
+| Feature | Detail |
+|---|---|
+| **Strip on upload** | Clears the auto-generated title for every new attachment immediately after upload |
+| **Bulk clear** | Adds a button to the Media Library screen that batch-clears titles from all existing attachments via AJAX — useful after first activating this module on a site with existing uploads |
 
 ---
 

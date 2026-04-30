@@ -44,48 +44,43 @@
 <?php /* accessibility nav */ ?>
 <a class="quick-links" href="#main-content">Skip to Main Content</a>
 <a class="quick-links" href="#global-footer">Skip to Footer</a>
-
-    <div id="container">
-
-        <?php // Customizer Header Image section. Uncomment to use. ?>
-            <!-- <?php if( get_header_image() != "" ) { 
-
-                if ( is_front_page() ) { ?>
-
-                <div id="banner">                
-                    
-                    <img class="header-image" src="<?php header_image(); ?>" alt="Header graphic" />                
-                    
-                </div>
-
-            <?php }
-
-            } ?> -->
-
-        <header class="header">
-
-            <div id="inner-header" class="wrap">
-
-                <?php // You can use text or a logo (or both) in your header. Uncomment the below to use text. ?>
-                <!-- <div id="site-title" class="h1"><a href="<?php echo home_url(); ?>" rel="nofollow"><?php bloginfo('name'); ?></a></div> -->
-
-                <div id="logo" itemscope itemtype="http://schema.org/Organization"><a href="<?php echo home_url(); ?>" rel="nofollow"><img src="<?php echo get_template_directory_uri(); ?>/library/images/basecamp_logo.png" /></a></div>
-
-                <nav class="header-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
-                <?php // see all default args here: https://developer.wordpress.org/reference/functions/wp_nav_menu/ ?>
-                    <?php wp_nav_menu(array(
-                                'container' => false,                           // remove nav container
-                                'container_class' => 'menu',                 // class of container (should you choose to use it)
-                                'menu' => __( 'The Main Menu', 'basecamp' ),  // nav name
-                                'menu_class' => 'nav top-nav main-menu',               // adding custom nav class
-                                'theme_location' => 'main-nav',                 // where it's located in the theme
-                    )); ?>
-
-                </nav>
-
-                <?php // if you'd like to use the site description un-comment the below <p></p>. If not, leave as-is or delete it. ?>
-                <!-- <p class="site-description"><?php bloginfo('description'); ?></p> -->
-
+<?php /* Header Start */ ?>
+<div class="region is--fixed global-header" data-nav-slide="slide" id="global-header">
+	<header class="brand-header fluid ov cf">
+		<?php
+		/**
+		 * Header logo / brand.
+		 * Override header.php in a child theme to change the header structure entirely.
+		 * Use the 'basecamp_header_logo' filter to swap just the logo markup without a full override.
+		 */
+		$logo_markup = is_front_page()
+			? '<h1 class="brand brand-fs" id="logo" itemscope itemtype="http://schema.org/Organization"><span class="is--logo">' . esc_html( get_bloginfo( 'name' ) ) . '</span></h1>'
+			: '<h1 class="brand brand-fs" id="logo" itemscope itemtype="http://schema.org/Organization"><a class="is--logo" href="/" rel="home">' . esc_html( get_bloginfo( 'name' ) ) . '</a></h1>';
+		echo apply_filters( 'basecamp_header_logo', $logo_markup );
+		?>
+        <?php /* Global Menus */ ?>
+        <div class="menu-global">
+            <div class="cf" role="navigation" itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+            <?php /*<h2 class="hide-text">Main Menu</h2>*/ ?>
+            <?php if ( is_front_page() ) : ?>
+                <!--<div class="menu-logo"></div>-->
+            <?php else : ?>
+                <!--<a class="menu-logo" href="/" rel="home" aria-label="Home button"></a>-->
+            <?php endif ?>
+                <?php 
+                    wp_nav_menu( 
+                        array(
+                            'theme_location'  => 'primary',
+                            'menu_class' => 'navigation-global is--flex-list',
+                            'menu_id' => 'primary-menu',
+                            'container' => 'ul'
+                        )
+                    );
+                ?>
             </div>
+        </div>
+    </header>
+</div>
+<?php /* Header End */ ?>
+<hr class="hide-divider">
 
-        </header>

@@ -15,8 +15,11 @@
  *
  * @package basecamp
  */
+declare(strict_types=1);
 
 namespace Basecamp\ThemeFunctions;
+
+
 
 use Basecamp\Admin\Settings;
 
@@ -27,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Manages conditional Google Analytics loading.
  */
-class Analytics {
+final class Analytics {
 
 	/**
 	 * Register hooks.

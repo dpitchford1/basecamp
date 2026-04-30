@@ -10,7 +10,7 @@
 
 <?php get_header(); ?>
 
-<main id="main" class="">
+<main id="main-content" class="">
 
     <?php get_template_part( 'template-parts/video-carousel' ); ?>
 

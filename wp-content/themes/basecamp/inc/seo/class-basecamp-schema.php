@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Basecamp Schema — JSON-LD Structured Data
  *
@@ -15,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Schema {
+final class Schema {
 
 	/**
 	 * Register hooks.
@@ -42,6 +44,9 @@ class Schema {
 		} elseif ( is_category() || is_tag() || is_tax() || is_post_type_archive() ) {
 			$graphs[] = self::breadcrumb();
 		}
+
+		// Allow plugins / extensions to inject additional graph nodes.
+		$graphs = apply_filters( 'basecamp_schema_graphs', $graphs );
 
 		foreach ( array_filter( $graphs ) as $graph ) {
 			echo '<script type="application/ld+json">'
@@ -73,7 +78,7 @@ class Schema {
 
 		$org = [
 			'@context' => 'https://schema.org',
-			'@type'    => 'Organization',
+			'@type'    => 'LocalBusiness',
 			'@id'      => home_url( '/#organization' ),
 			'name'     => get_bloginfo( 'name' ),
 			'url'      => home_url( '/' ),

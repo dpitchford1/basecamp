@@ -27,8 +27,6 @@ wp-config.php
 
 # Example themes
 /wp-content/themes/twenty*/
-/wp-content/themes/basecamp/library/
-/wp-content/themes/basecamp/languages/
 #/wp-content/themes/basecamp/templates/
 /wp-content/themes/basecamp/not used/
 /wp-content/themes/basecamp/inc/*archive/
@@ -36,18 +34,33 @@ wp-config.php
 /wp-content/themes/basecamp/examples/
 /wp-content/themes/basecamp/inc/woocommerce/
 
+# Personal Child Themes
+/wp-content/themes/dish/
+/wp-content/themes/miconcept-design/
+
+# General theme(s) files
+/wp-content/themes/basecamp/inc/admin/assets/
+/_old-dish-files/
+/assets/_archive/
+.github/copilot-instructions.md
 
 
-# Example plugin
+# WP plugins
+/wp-content/plugins/_archive
 /wp-content/plugins/hello.php
 /wp-content/plugins/classic-editor/
-/wp-content/plugins/media-library-plus/
+/wp-content/plugins/contact-form-7/
+/wp-content/plugins/contact-form-7-honeypot/
 /wp-content/plugins/menus/
-/wp-content/plugins/cookies-and-content-security-policy/
-/wp-content/plugins/faqs/
 /wp-content/plugins/wp-sweep/
 
-/wp-content/themes/basecamp/inc/admin/assets/
+# Personal plugins
+/wp-content/plugins/dev-maintenance/
+/wp-content/plugins/layout-tester/
+/wp-content/plugins/work/
+/wp-content/plugins/faqs/
+/wp-content/plugins/media-library-plus/
+/wp-content/plugins/dish-events/
 
 # Uploads
 /wp-content/uploads/

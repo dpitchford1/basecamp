@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Theme Settings
  *
@@ -21,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Settings {
+final class Settings {
 
 	const OPTION_KEY = 'basecamp_theme_settings';
 
@@ -38,6 +40,9 @@ class Settings {
 			'gsc_verification'  => '',
 			'schema_output'     => '1',
 			'webp_optimization' => '1',
+			'toast_enabled'     => '0',
+			'toast_text'        => '',
+			'toast_url'         => '',
 		];
 	}
 
@@ -207,6 +212,41 @@ class Settings {
 			'basecamp_settings_verification',
 			[ 'key' => 'gsc_verification' ]
 		);
+
+		// --- Announcement Bar ----------------------------------------
+		add_settings_section(
+			'basecamp_settings_toast',
+			__( 'Announcement Bar', 'basecamp' ),
+			'__return_false',
+			'basecamp-theme-settings'
+		);
+
+		add_settings_field(
+			'basecamp_toast_enabled',
+			__( 'Enable', 'basecamp' ),
+			[ __CLASS__, 'render_field' ],
+			'basecamp-theme-settings',
+			'basecamp_settings_toast',
+			[ 'key' => 'toast_enabled' ]
+		);
+
+		add_settings_field(
+			'basecamp_toast_text',
+			__( 'Message', 'basecamp' ),
+			[ __CLASS__, 'render_field' ],
+			'basecamp-theme-settings',
+			'basecamp_settings_toast',
+			[ 'key' => 'toast_text' ]
+		);
+
+		add_settings_field(
+			'basecamp_toast_url',
+			__( 'Link URL', 'basecamp' ),
+			[ __CLASS__, 'render_field' ],
+			'basecamp-theme-settings',
+			'basecamp_settings_toast',
+			[ 'key' => 'toast_url' ]
+		);
 	}
 
 	/**
@@ -223,12 +263,25 @@ class Settings {
 			case 'cookie_compliance':
 			case 'schema_output':
 			case 'webp_optimization':
+			case 'toast_enabled':
 				printf(
 					'<label><input type="checkbox" name="%s" value="1" %s> %s</label>',
 					esc_attr( $name ),
 					checked( $val, '1', false ),
 					esc_html( self::field_label( $key ) )
 				);
+				break;
+
+			case 'toast_url':
+				printf(
+					'<input type="url" name="%s" value="%s" class="regular-text" placeholder="https://">',
+					esc_attr( $name ),
+					esc_attr( (string) $val )
+				);
+				$hint = self::field_hint( $key );
+				if ( $hint ) {
+					echo '<p class="description">' . esc_html( $hint ) . '</p>';
+				}
 				break;
 
 			default:
@@ -264,6 +317,7 @@ class Settings {
 			'cookie_compliance' => __( 'Show the GDPR/CCPA cookie consent banner and load GA Consent Mode v2. Disabling removes the banner and all consent-mode scripts.', 'basecamp' ),
 			'schema_output'     => __( 'Output Schema.org JSON-LD structured data in the page head.', 'basecamp' ),
 			'webp_optimization' => __( 'Automatically substitute .webp variants for uploaded images when available.', 'basecamp' ),
+			'toast_enabled'     => __( 'Show the announcement bar on the front end.', 'basecamp' ),
 		];
 		return $labels[ $key ] ?? '';
 	}
@@ -275,6 +329,8 @@ class Settings {
 		$hints = [
 			'ga_id'            => __( 'Enter your GA4 Measurement ID (e.g. G-XXXXXXXXXX). Leave empty to disable analytics entirely. Can be overridden via BASECAMP_GA_MEASUREMENT_ID in wp-config.php.', 'basecamp' ),
 			'gsc_verification' => __( 'Paste only the code value from the <meta name="google-site-verification" content="…"> tag, not the full HTML tag.', 'basecamp' ),
+			'toast_text'       => __( 'The message displayed in the announcement bar.', 'basecamp' ),
+			'toast_url'        => __( 'Optional. The URL the message links to. Leave empty for plain text.', 'basecamp' ),
 		];
 		return $hints[ $key ] ?? '';
 	}
@@ -296,6 +352,9 @@ class Settings {
 			'gsc_verification'  => sanitize_text_field( $input['gsc_verification'] ?? '' ),
 			'schema_output'     => ! empty( $input['schema_output'] ) ? '1' : '0',
 			'webp_optimization' => ! empty( $input['webp_optimization'] ) ? '1' : '0',
+			'toast_enabled'     => ! empty( $input['toast_enabled'] ) ? '1' : '0',
+			'toast_text'        => sanitize_text_field( $input['toast_text'] ?? '' ),
+			'toast_url'         => esc_url_raw( $input['toast_url'] ?? '' ),
 		];
 	}
 

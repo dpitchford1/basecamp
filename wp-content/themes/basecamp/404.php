@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<main id="main" class="m-all t-all d-all" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
+<main id="main-content" class="">
 
     <section class="entry-content">
 

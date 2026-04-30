@@ -8,13 +8,15 @@
  * @package basecamp
  */
 
+declare(strict_types=1);
+
 namespace Basecamp\Frontend;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class RemoveBloat {
+final class RemoveBloat {
 
 	/**
 	 * Register all cleanup hooks.
@@ -45,9 +47,15 @@ class RemoveBloat {
 		remove_action( 'template_redirect', 'rest_output_link_header', 11 );
 		remove_filter( 'oembed_dataparse',    'wp_filter_oembed_result',  10 );
 		remove_filter( 'the_content',         'convert_smilies' );
+		remove_filter( 'the_excerpt',         'wpautop' );
 		remove_action( 'set_comment_cookies', 'wp_set_comment_cookies' );
 		remove_action( 'wp_enqueue_scripts',  'wp_enqueue_global_styles' );
 		remove_action( 'wp_body_open',        'wp_global_styles_render_svg_filters' );
+
+		add_filter( 'show_admin_bar',        [ __CLASS__, 'hide_admin_bar_for_subscribers' ] );
+		add_action( 'wp_enqueue_scripts',    [ __CLASS__, 'conditionally_load_cf7' ], 99 );
+
+        add_filter( 'should_load_separate_core_block_assets', '__return_false' );
 	}
 
 	/**
@@ -99,9 +107,16 @@ class RemoveBloat {
 	 * Dequeue unwanted core stylesheet handles.
 	 */
 	public static function remove_useless_styles(): void {
-		wp_dequeue_style( 'classic-theme-styles' );
-		wp_dequeue_style( 'global-styles' );
+		//wp_dequeue_style( 'classic-theme-styles' );
+		//wp_dequeue_style( 'global-styles' );
 		wp_dequeue_style( 'wp-block-library' );
+
+        wp_dequeue_style( 'classic-theme-styles' );
+        wp_deregister_style( 'global-styles' );
+        wp_dequeue_style( 'global-styles' );
+
+        wp_deregister_style( 'global-styles-inline-css' );
+        wp_dequeue_style( 'global-styles-inline-css' );
 	}
 
 	/**
@@ -127,6 +142,45 @@ class RemoveBloat {
 	 */
 	public static function remove_pingback_url( string $output, string $property ): ?string {
 		return ( 'pingback_url' === $property ) ? null : $output;
+	}
+
+	/**
+	 * Hide the admin bar for subscribers and non-logged-in users.
+	 *
+	 * @param  bool $show Whether to show the admin bar.
+	 * @return bool
+	 */
+	public static function hide_admin_bar_for_subscribers( bool $show ): bool {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+		return $show;
+	}
+
+	/**
+	 * Conditionally dequeue Contact Form 7 scripts and styles.
+	 *
+	 * By default, CF7 loads its assets on every page. This method dequeues them
+	 * everywhere except pages whose slugs are listed in the filterable array.
+	 *
+	 * Usage (add to a child theme or project functions file):
+	 *   add_filter( 'basecamp_cf7_page_slugs', function( $slugs ) {
+	 *       $slugs[] = 'contact';
+	 *       return $slugs;
+	 *   } );
+	 *
+	 * @return void
+	 */
+	public static function conditionally_load_cf7(): void {
+		/** @var string[] $cf7_page_slugs Page slugs on which CF7 assets should load. */
+		$cf7_page_slugs = apply_filters( 'basecamp_cf7_page_slugs', ['contact'] );
+
+		if ( ! is_page( $cf7_page_slugs ) ) {
+			wp_dequeue_script( 'contact-form-7' );
+			wp_dequeue_script( 'wpcf7-swv' );
+			wp_dequeue_style( 'contact-form-7' );
+			wp_dequeue_style( 'wpcf7-swv' );
+		}
 	}
 }
 

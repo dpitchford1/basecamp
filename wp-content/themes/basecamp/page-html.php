@@ -15,7 +15,7 @@
 
 <?php get_header(); ?>
 
-<main id="main" class="" itemscope itemprop="mainContentOfPage" itemtype="http://schema.org/Blog">
+<main id="main-content" class="">
 
 	<section id="post-<?php the_ID(); ?>" <?php post_class( '' ); ?>>
 

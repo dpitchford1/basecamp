@@ -10,21 +10,21 @@ Goal: A clean, honest starter theme with no client-project residue, accurate doc
 
 ### Code
 
-- [ ] **Strip project-specific SEO title extensions** — `Basecamp_Title_Sector` and `Basecamp_Title_Work` exist from the original project. Core should only ship `Basecamp_Title_Core`. Move the others to a documented example or remove entirely.
-- [ ] **Audit `class-basecamp.php` body classes** — `is_page('Contact')` and `is_page('Shop')` are project-specific. Replace with a filterable, generic approach.
-- [ ] **Tidy `functions.php` load order** — Analytics and cookie consent are loaded outside their logical section groups. Group into: Core → Frontend → Admin → SEO → Theme Functions → Optimization → REST → Cron → Dev → Ecommerce.
-- [ ] **Confirm `class-basecamp-schema.php` is initialised** — verify `Basecamp_Schema::init()` is called.
-- [ ] **Review `inc/rest/basecamp-rest-endpoints.php`** — strip debug `error_log` calls; decide if a starter example endpoint stays or is documented-only.
-- [ ] **Review `inc/admin/class-basecamp-admin.php`** — audit for any remaining project-specific hardcoding.
-- [ ] **Clean `header.php` and `footer.php`** — remove legacy commented-out blocks; leave minimal, intentional scaffolding with clear developer comments.
-- [ ] **PHP namespace strategy** — evaluate moving from `Basecamp_*` prefix convention to `namespace Basecamp\...` for collision safety and future-proofing. *(Deferred — design decision needed first.)*
+- [x] **Strip project-specific SEO title extensions** — `Basecamp_Title_Sector` and `Basecamp_Title_Work` removed. Core ships `Basecamp_Title_Core` only.
+- [x] **Audit `class-basecamp.php` body classes** — `is_page('Contact')` / `is_page('Shop')` replaced with the filterable `basecamp_body_page_classes` filter.
+- [x] **Tidy `functions.php` load order** — grouped into labeled sections: Core → Frontend → Admin → SEO → Theme Functions → Optimization → REST → Cron → Dev → Ecommerce.
+- [x] **Confirm `class-basecamp-schema.php` is initialised** — verified.
+- [x] **Review `inc/rest/basecamp-rest-endpoints.php`** — debug `error_log` calls removed; starter ping endpoint kept and documented.
+- [x] **Review `inc/admin/class-basecamp-admin.php`** — project-specific hardcoding removed; `get_basecamp_directory_uri()` → `get_template_directory_uri()` fixed.
+- [-] **Clean `header.php` and `footer.php`** — `footer.php` cleaned; `header.php` handled manually by project owner.
+- [x] **PHP namespace strategy** — `Basecamp\*` hierarchy implemented across all `inc/` classes. Back-compat aliases registered in `functions.php`.
 
 ### Documentation
 
-- [ ] **Update `Docs/developer/01-architecture.md`** — directory structure references non-existent paths (`template-parts/sector/`, `template-parts/news/`, CPTs). Rewrite to reflect actual codebase.
-- [ ] **Update `Docs/developer/00-setup.md`** — remove project-specific plugin list; make generic and accurate.
-- [ ] **Update `Docs/developer/06-seo.md`** — remove `Basecamp_Title_Sector` and `Basecamp_Title_Work` from the extension table; reframe as a documented pattern with a single example.
-- [ ] **Review all other developer docs** — pass through `02` through `05` for any project-specific content.
+- [x] **Update `Docs/developer/01-architecture.md`** — directory structure, module load order, and new modules (toast, subnav, page helpers, media) all updated.
+- [x] **Update `Docs/developer/00-setup.md`** — project-specific plugin list removed; made generic and accurate.
+- [x] **Update `Docs/developer/06-seo.md`** — project-specific title extensions removed; schema output table cleaned.
+- [x] **Review all other developer docs** — `02` through `05` reviewed and updated. New `07-theme-settings.md` and `08-frontend-helpers.md` added.
 
 ---
 
@@ -32,15 +32,15 @@ Goal: A clean, honest starter theme with no client-project residue, accurate doc
 
 Goal: Enrich the starter with additional built-in features that reduce plugin dependency without adding complexity for projects that don't need them. Everything toggleable.
 
-- [ ] **Custom Post Types scaffold** — a clean, commented example CPT registration in `inc/theme-functions/` that developers copy and adapt. No CPT active by default.
-- [ ] **Navigation patterns** — clean primary nav with keyboard accessibility, mobile toggle, and aria attributes baked in. No jQuery.
-- [ ] **Search template** — improve `search.php` and `searchform.php` for accessibility and usability.
-- [ ] **Comments template** — `comments.php` currently missing from active theme; add a clean, accessible version.
-- [ ] **Pagination helper** — `Basecamp_Frontend::page_navi()` exists but usage needs documenting; confirm it works correctly.
-- [ ] **Image helper patterns** — document and standardize how images are output (responsive, WebP-aware, lazy-load).
-- [ ] **`wp-config.php` sample additions** — security constants, debug flags, environment detection helpers for the repo sample.
-- [ ] **Robots.txt review** — current `robots.txt` in repo root needs review for starter theme defaults.
-- [ ] **Scheduled events** — populate `inc/core/basecamp-scheduled-events.php` stub with at least one documented example hook.
+- [x] **Custom Post Types scaffold** — `inc/theme-functions/basecamp-cpt-scaffold.php` added; commented, not active by default.
+- [-] **Navigation patterns** — deferred; will address when building out a real project on this base.
+- [x] **Search template** — `search.php` and `searchform.php` updated for accessibility and usability.
+- [-] **Comments template** — deferred; likely not needed for modern builds.
+- [x] **Pagination helper** — `Basecamp_Frontend::page_navi()` confirmed working; usage documented in `05-images-media.md`.
+- [x] **Image helper patterns** — documented in `05-images-media.md`; responsive, WebP-aware, lazy-load patterns all covered.
+- [x] **`wp-config.php` sample additions** — security constants, debug flags, and environment detection added.
+- [-] **Robots.txt review** — deferred to Phase 3 / distribution prep.
+- [x] **Scheduled events** — `inc/core/basecamp-scheduled-events.php` stub populated with a documented example hook.
 
 ---
 
@@ -48,12 +48,25 @@ Goal: Enrich the starter with additional built-in features that reduce plugin de
 
 Goal: A theme that can be handed to another developer (or future-self) and is immediately understandable.
 
-- [ ] **README.md at theme root** — comprehensive: what it is, requirements, how to install, how to extend, coding conventions.
-- [ ] **Inline code documentation** — audit all classes and functions for complete DocBlocks.
-- [ ] **`style.css` theme header** — update version, description, and tags to reflect the actual theme.
-- [ ] **Screenshot** — update `screenshot.png` to reflect the actual theme.
-- [ ] **WooCommerce** — complete the toggle-ready scaffold: confirm `inc/woocommerce/woocommerce-functions.php` is production-ready, document activation steps.
-- [ ] **SCSS system** — document the asset pipeline, file structure, and compilation setup clearly for new developers.
-- [ ] **Performance audit** — run against a clean WP install, document baseline scores, identify any remaining low-hanging fruit.
-- [ ] **PHP namespace migration** — if the namespace strategy decision (Phase 1) concluded in favour of migration, execute it here.
-- [ ] **Docs review pass** — full review of all Docs sections against the shipped code before any distribution.
+- [x] **README.md at theme root** — comprehensive: what it is, requirements, how to install, how to extend, coding conventions.
+- [x] **Inline code documentation** — DocBlock audit complete across all classes and public methods.
+- [x] **`style.css` theme header** — version, description, and tags updated.
+- [-] **Screenshot** — manual; update `screenshot.png` before distribution.
+- [x] **WooCommerce** — toggle-ready scaffold confirmed; activation steps documented.
+- [x] **SCSS system** — `04-scss-system.md` accurate; asset pipeline, file structure, and compilation fully documented.
+- [-] **Performance audit** — manual; run against a clean WP install before distributing.
+- [x] **PHP namespace migration** — completed. See Phase 1.
+- [x] **Docs review pass** — all developer docs reviewed and updated against current codebase. New `07-theme-settings.md` and `08-frontend-helpers.md` added.
+
+---
+
+## Phase 4 — Parent / Child Architecture
+
+Goal: Extract Basecamp into a true WordPress parent theme. Child themes inherit all core functionality and override only what they need — zero copy-paste between projects.
+
+- [x] **Define the parent/child contract** — infrastructure in parent, project-specific in child; Model B (parent ships opinionated defaults, child overrides selectively).
+- [x] **Child theme scaffold** — `kaneism/` created: `style.css` with `Template: basecamp`, documented `functions.php`, `readme.md`, structured `inc/` with admin/frontend/theme-functions stubs.
+- [-] **Asset strategy for child themes** — deferred; requires strategic decision on CSS architecture.
+- [ ] **Template override documentation** — document which parent templates are safe to override, which use filter hooks, and how to extend without breaking.
+- [ ] **Hook reference** — enumerate all filters and actions the parent exposes specifically for child theme use.
+- [ ] **First real child theme** — Kaneism scaffold created; now build out the actual site content.

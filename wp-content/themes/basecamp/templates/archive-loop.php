@@ -1,6 +1,6 @@
 <?php
 
-the_archive_title( '<h1 class="page-title">', '</h1>' );
+the_archive_title( '<h2 class="page-title">', '</h2>' );
 
 // Not all themes show these but you can if you want to
 the_archive_description( '<div class="taxonomy-description">', '</div>' );
@@ -8,17 +8,17 @@ the_archive_description( '<div class="taxonomy-description">', '</div>' );
 							
 <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
 
-	<article id="post-<?php the_ID(); ?>" <?php post_class( 'cf' ); ?> role="article">
+	<section id="post-<?php the_ID(); ?>" <?php post_class( 'cf' ); ?> role="article">
 
-		<header class="entry-header article-header">
+		<div class="entry-header article-header">
 
 			<?php get_template_part( 'templates/header', 'title'); ?>
 		
 			<?php get_template_part( 'templates/byline'); ?>
 
-		</header>
+		</div>
 
-		<section class="entry-content cf">
+		<article class="entry-content cf">
 
 			<div class="post-thumbnail">
 
@@ -28,15 +28,12 @@ the_archive_description( '<div class="taxonomy-description">', '</div>' );
 
 			<?php the_excerpt(); ?>
 
-		</section>
+		</article>
 
-		<footer class="article-footer">
-
+		<div class="article-footer">
 			<?php get_template_part( 'templates/category-tags'); ?>
-
-		</footer>
-
-	</article>
+		</div>
+	</section>
 
 <?php endwhile; endif; ?>
 

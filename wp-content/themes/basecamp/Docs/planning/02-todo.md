@@ -69,13 +69,46 @@ Format: `[ ]` not started · `[x]` done · `[-]` deferred/blocked
 - [x] WooCommerce scaffold review and activation docs
 - [x] SCSS system documentation — `04-scss-system.md` reviewed; accurate, no changes needed
 - [-] Performance audit on clean WP install — manual; run against clean WP before distributing
-- [-] PHP namespace migration (if decided in Phase 1)
-- [x] Full Docs review pass before distribution — all seven developer docs reviewed and updated
+- [x] PHP namespace migration — `Basecamp\*` hierarchy implemented across all `inc/` classes; back-compat aliases in `functions.php`; docs and copilot-instructions updated
+- [x] Full Docs review pass before distribution — all developer docs reviewed and updated against current codebase
 - [x] Theme Settings page — `Basecamp_Settings` class, Appearance → Theme Settings; GA4 ID, cookie compliance toggle, GSC verification, schema toggle, WebP toggle; `07-theme-settings.md` added
+- [x] `declare(strict_types=1)` and `final class` — documented in `02-code-style.md` as explicit required standards; boilerplate example updated
+- [x] `03-metaboxes.md` — both existing metaboxes (MetaLinkList, VideoCarousel) documented with field tables, meta keys, and template usage
+- [x] `08-frontend-helpers.md` — new doc covering Toast, Subnav, Page Helpers, normalize_img_tag_classes, RemoveBloat additions (CF7, subscriber admin bar, wpautop excerpt), view-in-browser node, analytics filters
+
+---
+
+## Phase 4 — Parent / Child Architecture
+
+- [x] Define the parent/child contract — Model B; infrastructure in parent, project-specific in child
+- [x] Parent `header.php` — hardcoded "Basecamp" replaced with `get_bloginfo('name')`; `basecamp_header_logo` filter added
+- [x] Parent `footer.php` — hardcoded legal links replaced with `basecamp_footer_legal_links` filter
+- [x] Child theme scaffold — `kaneism/` with `style.css`, `functions.php`, `readme.md`, structured `inc/` (admin, frontend, theme-functions)
+- [x] Documented child `functions.php` — all parent filters shown with inline examples; what-not-to-do rules
+- [x] CPT scaffold in child — `kaneism-cpt-portfolio.php` as copy/rename template
+- [-] Asset strategy — deferred
+- [ ] Template override documentation — which parent templates are safe to override; filter hook alternatives
+- [ ] Hook reference doc — all parent-exposed filters and actions enumerated for child theme use
+- [ ] Build out Kaneism site content
 
 ---
 
 ## Completed
+
+### Phase 4 Prep — Merge passes (Dish → Basecamp, Mi Concept → Basecamp)
+
+- [x] Merge Pass 1 (Dish): Toast (`class-basecamp-toast.php`), Subnav (`basecamp-subnav.php`), Page Helpers (`basecamp-page-helpers.php`), Media (`basecamp-media.php`), Thumb Regen (`basecamp-thumb-regen.php`)
+- [x] Merge Pass 1: Image Tools hub (tabbed: WebP Conversion / Regen / Test); `admin_init` form handling; progress fix
+- [x] Merge Pass 1: 4 square image sizes added to `class-basecamp.php`; responsive-embeds enabled; widgets_init removed
+- [x] Merge Pass 1: RemoveBloat — `wpautop` from excerpt, `hide_admin_bar_for_subscribers`, `conditionally_load_cf7` with `basecamp_cf7_page_slugs` filter
+- [x] Merge Pass 1: Frontend — `remove_p_tags_from_images`, 3-layer `menu_selected_class`, output_critical_css BOM+cast fixes
+- [x] Merge Pass 1: Admin — H2 added to TinyMCE; footer credit → kaneism.com
+- [x] Merge Pass 1: All SEO files — `final` + `strict_types`; hierarchical title fix
+- [x] Merge Pass 2 (Mi Concept): Category URL rewrite (`basecamp-category-url.php`) — disabled by default
+- [x] Merge Pass 2: WebP — simplified `is_supported()` (str_contains, IE/EdgeHTML exclusion); static per-request cache in `get_webp_image()`
+- [x] Merge Pass 2: Admin — `add_view_in_browser_node()` on post edit screens
+- [x] Merge Pass 2: Frontend — `normalize_img_tag_classes()` + `basecamp_keep_wp_image_size_classes` filter
+- [x] Announcement Bar settings (`toast_enabled`, `toast_text`, `toast_url`) added to Theme Settings
 
 ### Phase 1 — Foundation
 

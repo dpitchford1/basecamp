@@ -22,6 +22,22 @@ GA loads on all environments but only sends config hits when `BASECAMP_ENV` is `
 
 ---
 
+### Announcement Bar
+
+| Setting | Key | Type | Default |
+|---|---|---|---|
+| Enable announcement bar | `toast_enabled` | Checkbox | `0` (disabled) |
+| Announcement text | `toast_text` | Text | *(empty)* |
+| Announcement URL | `toast_url` | URL | *(empty — no link)* |
+
+A dismissable banner shown at the top of every frontend page. When `toast_enabled` is `'1'` and `toast_text` is non-empty, the bar renders automatically via `the_toast()` (called in `header.php`).
+
+If `toast_url` is set, the text is wrapped in an anchor tag pointing to that URL. Leave empty for a text-only bar.
+
+Dismissed state is persisted per-visitor in `localStorage`, keyed to an MD5 hash of the bar content. Editing the text or URL automatically resets the dismissed state for all visitors.
+
+---
+
 ### Privacy & Compliance
 
 | Setting | Key | Type | Default |

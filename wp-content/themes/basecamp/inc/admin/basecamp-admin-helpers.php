@@ -5,6 +5,8 @@
  * @package basecamp
  */
 
+declare(strict_types=1);
+
 namespace Basecamp\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Miscellaneous admin helpers — sanitizers, timeouts, MIME-type allowlisting.
  */
-class AdminHelpers {
+final class AdminHelpers {
 
 	/**
 	 * Register all hooks managed by this class.

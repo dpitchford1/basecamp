@@ -8,7 +8,11 @@
 
 if (!defined('ABSPATH')) exit;
 
-// Register rewrite rule on activation
+// Register rewrite rule on init (survives permalink flushes) and flush on activation.
+add_action('init', function() {
+    add_rewrite_rule('^layout-tester/?$', 'index.php?layout_tester=1', 'top');
+});
+
 register_activation_hook(__FILE__, function() {
     add_rewrite_rule('^layout-tester/?$', 'index.php?layout_tester=1', 'top');
     flush_rewrite_rules();

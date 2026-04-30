@@ -5,9 +5,11 @@
  * @package basecamp
  */
 
+declare(strict_types=1);
+
 namespace Basecamp\Frontend;
 
-class Frontend {
+final class Frontend {
 
 	/**
 	 * Initialize hooks.
@@ -16,6 +18,8 @@ class Frontend {
 		add_action( 'template_redirect', [ $this, 'start_output_buffer' ] );
 
 		// Frontend hooks and filters
+		add_filter( 'the_content', [ __CLASS__, 'remove_p_tags_from_images' ] );
+		add_filter( 'wp_get_attachment_image_attributes', [ __CLASS__, 'normalize_img_tag_classes' ], 20, 3 );
 		add_filter('nav_menu_link_attributes', [ __CLASS__, 'menu_selected_class' ], 99, 4);
 		add_filter('wp_resource_hints', '__return_empty_array', 99);
 		add_filter('wp_img_tag_add_auto_sizes', '__return_false');
@@ -99,13 +103,14 @@ class Frontend {
 	 * @param string $css_file_path Absolute path to the critical CSS file.
 	 * @param string $transient_key Unique key for the transient.
 	 */
-	public static function output_critical_css( $css_file_path, $transient_key = 'basecamp_critical_css' ) {
-		$css = get_transient( $transient_key );
-		$file_mtime = file_exists( $css_file_path ) ? filemtime( $css_file_path ) : 0;
+	public static function output_critical_css( string $css_file_path, string $transient_key = 'basecamp_critical_css' ): void {
+		$css        = get_transient( $transient_key );
+		$file_mtime = file_exists( $css_file_path ) ? (int) filemtime( $css_file_path ) : 0;
 
-		if ( false === $css || get_transient( $transient_key . '_mtime' ) !== $file_mtime ) {
-			$css = file_exists( $css_file_path ) ? file_get_contents( $css_file_path ) : '';
-			$css = preg_replace( '/\s+/', ' ', $css ); // Simple minification
+		if ( false === $css || (int) get_transient( $transient_key . '_mtime' ) !== $file_mtime ) {
+			$css = file_exists( $css_file_path ) ? (string) file_get_contents( $css_file_path ) : '';
+			$css = ltrim( $css, "\xEF\xBB\xBF" ); // Strip UTF-8 BOM if present
+			$css = (string) preg_replace( '/\s+/', ' ', $css ); // Simple minification
 			set_transient( $transient_key, $css, DAY_IN_SECONDS );
 			set_transient( $transient_key . '_mtime', $file_mtime, DAY_IN_SECONDS );
 		}
@@ -117,32 +122,57 @@ class Frontend {
 
 	/**
 	 * Add 'menu--selected' class to anchor tags for active menu items.
+	 *
+	 * Three detection layers:
+	 *   1. WP's own current-menu-* classes (fast, reliable for registered menus).
+	 *   2. Ancestor page walk — marks parent pages of the current page active.
+	 *   3. URL-prefix match — catches archive/taxonomy URLs not covered by WP.
+	 *
+	 * @param array    $atts  Link attributes.
+	 * @param \WP_Post $item  Menu item post object.
+	 * @param object   $args  wp_nav_menu() arguments.
+	 * @param int      $depth Menu depth.
+	 * @return array
 	 */
-	public static function menu_selected_class($atts, $item, $args, $depth) {
-		$item_classes = is_array($item->classes) ? $item->classes : array();
-		$active_classes = array(
+	public static function menu_selected_class( array $atts, \WP_Post $item, object $args, int $depth ): array {
+		$item_classes = is_array( $item->classes ) ? $item->classes : [];
+
+		// Layer 1: WP native active classes.
+		$wp_active = [
 			'current-menu-item',
 			'current-menu-ancestor',
 			'current-menu-parent',
 			'current_page_item',
 			'current_page_parent',
-			'current_page_ancestor'
-		);
-		$is_active = false;
-		foreach ($active_classes as $class) {
-			if (in_array($class, $item_classes)) {
+			'current_page_ancestor',
+		];
+		$is_active = (bool) array_intersect( $wp_active, $item_classes );
+
+		// Layer 2: Ancestor walk — parent pages of the current page.
+		if ( ! $is_active && is_page() ) {
+			global $post;
+			$ancestors = get_post_ancestors( $post );
+			if ( $item->object_id && in_array( (int) $item->object_id, $ancestors, true ) ) {
 				$is_active = true;
-				break;
 			}
 		}
-		if (!isset($atts['class'])) {
+
+		// Layer 3: URL-prefix — catches archive/taxonomy URLs not wired to a page.
+		if ( ! $is_active && ! empty( $item->url ) ) {
+			$current_url = home_url( add_query_arg( [], $GLOBALS['wp']->request ?? '' ) );
+			$item_url    = rtrim( $item->url, '/' );
+			if ( $item_url && str_starts_with( rtrim( $current_url, '/' ), $item_url ) ) {
+				$is_active = true;
+			}
+		}
+
+		if ( ! isset( $atts['class'] ) ) {
 			$atts['class'] = '';
 		}
-		if ($is_active) {
-			$atts['class'] .= ' menu--selected';
-			$atts['class'] = trim($atts['class']);
+		if ( $is_active ) {
+			$atts['class'] = trim( $atts['class'] . ' menu--selected' );
 		} else {
-			$atts['class'] = trim($atts['class']);
+			$atts['class'] = trim( $atts['class'] );
 		}
 		return $atts;
 	}
@@ -183,7 +213,7 @@ class Frontend {
 
 		$bignum = 999999999;
 		$defaults = [
-			'base'      => str_replace( $bignum, '%#%', esc_url( get_pagenum_link( $bignum ) ) ),
+			'base'      => str_replace( (string) $bignum, '%#%', esc_url( get_pagenum_link( $bignum ) ) ),
 			'format'    => '',
 			'current'   => max( 1, get_query_var( 'paged' ) ),
 			'total'     => $total_pages,
@@ -345,6 +375,53 @@ class Frontend {
 		echo $landscape_img;
 
 		echo '</picture>';
+	}
+
+	/**
+	 * Normalise CSS classes on attachment image tags.
+	 *
+	 * Deduplicates class values that wp_get_attachment_image() can occasionally
+	 * produce when multiple filters touch the same attribute. Optionally strips
+	 * WP's auto-generated size-* / attachment-* classes via filter.
+	 *
+	 * @param array                $attr       Image attributes.
+	 * @param \WP_Post             $attachment Attachment post object.
+	 * @param string|array|int     $size       Requested image size.
+	 * @return array
+	 */
+	public static function normalize_img_tag_classes( array $attr, \WP_Post $attachment, $size ): array {
+		if ( empty( $attr['class'] ) ) {
+			return $attr;
+		}
+
+		$classes = array_filter( preg_split( '/\s+/', trim( $attr['class'] ) ) );
+
+		/**
+		 * Whether to keep WP's auto-generated size-* and attachment-* classes.
+		 *
+		 * @param bool $keep Default true.
+		 */
+		if ( ! apply_filters( 'basecamp_keep_wp_image_size_classes', true ) ) {
+			$classes = array_values( array_filter( $classes, function ( string $c ): bool {
+				return strpos( $c, 'size-' ) !== 0 && strpos( $c, 'attachment-' ) !== 0;
+			} ) );
+		}
+
+		$attr['class'] = implode( ' ', array_unique( $classes ) );
+		return $attr;
+	}
+
+	/**
+	 * Strip the <p> wrapper that wpautop wraps around standalone <img> tags.
+	 *
+	 * Prevents double-wrapping when images are already inside a block or custom markup.
+	 *
+	 * @param string $content Post content.
+	 * @return string
+	 */
+	public static function remove_p_tags_from_images( string $content ): string {
+		$content = preg_replace( '/<p>\s*(<a [^>]+>)?\s*(<img [^>]+>)\s*(<\/a>)?\s*<\/p>/i', '$1$2$3', $content );
+		return (string) $content;
 	}
 
 	/**

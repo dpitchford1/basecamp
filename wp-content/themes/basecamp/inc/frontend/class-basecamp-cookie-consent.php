@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Cookie Consent
  *
@@ -23,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class CookieConsent {
+final class CookieConsent {
 
 	const OPTION_KEY = 'basecamp_cookie_settings';
 
@@ -71,6 +73,18 @@ class CookieConsent {
 	// =========================================================================
 
 	/**
+	 * True when the visitor has already accepted or declined on a previous page load.
+	 * Uses the browser cookie set by JS — readable server-side so we can skip
+	 * rendering the banner HTML and enqueueing the consent script entirely.
+	 */
+	private static function has_stored_consent(): bool {
+		$val = isset( $_COOKIE['basecamp_cookie_consent'] )
+			? sanitize_key( $_COOKIE['basecamp_cookie_consent'] )
+			: '';
+		return in_array( $val, [ 'accepted', 'declined' ], true );
+	}
+
+	/**
 	 * Inject Google Consent Mode v2 defaults before gtag loads (priority 4).
 	 * gtag snippet is at priority 5, so this runs first.
 	 * Pushes consent/default into dataLayer; GA processes it before any config call.
@@ -79,14 +93,19 @@ class CookieConsent {
 		if ( ! Settings::get( 'ga_id' ) ) {
 			return;
 		}
+
+		$stored   = isset( $_COOKIE['basecamp_cookie_consent'] )
+			? sanitize_key( $_COOKIE['basecamp_cookie_consent'] )
+			: '';
+		$analytics = ( $stored === 'accepted' ) ? 'granted' : 'denied';
 		?>
 		<script>
 		window.dataLayer = window.dataLayer || [];
 		window.gtag = window.gtag || function () { window.dataLayer.push( arguments ); };
 		gtag( 'consent', 'default', {
-			analytics_storage : 'denied',
-			ad_storage        : 'denied',
-			wait_for_update   : 500
+			analytics_storage : '<?php echo esc_js( $analytics ); ?>',
+			ad_storage        : 'denied'<?php if ( $stored === '' ) : ?>,
+			wait_for_update   : 500<?php endif; ?>
 		} );
 		</script>
 		<?php
@@ -96,6 +115,11 @@ class CookieConsent {
 	 * Enqueue banner CSS and JS.
 	 */
 	public static function enqueue_assets(): void {
+		// Cookie already set — PHP handles GA consent state inline; no JS needed.
+		if ( self::has_stored_consent() ) {
+			return;
+		}
+
 		$ver = wp_get_theme()->get( 'Version' );
 
 		// wp_enqueue_style(
@@ -124,6 +148,11 @@ class CookieConsent {
 	 * JS removes the attribute when no stored preference is found.
 	 */
 	public static function render_banner(): void {
+		// Consent already stored — nothing to render.
+		if ( self::has_stored_consent() ) {
+			return;
+		}
+
 		$s              = self::get_settings();
 		$position_class = $s['position'] === 'top' ? 'cookie-banner--top' : 'cookie-banner--bottom';
 
@@ -175,8 +204,16 @@ class CookieConsent {
 	 * @return string
 	 */
 	public static function preferences_shortcode(): string {
+		// Clears both localStorage and the server-readable cookie, then reloads
+		// so PHP serves the full banner HTML + JS on the next page load.
+		// Intentionally inline — the consent JS may not be loaded on this page.
+		$onclick = "localStorage.removeItem('basecamp_cookie_consent');"
+			. "document.cookie='basecamp_cookie_consent=;path=/;max-age=0;SameSite=Lax';"
+			. "location.reload();";
+
 		return sprintf(
-			'<button type="button" class="cookie-preferences-btn" data-basecamp-cookie-prefs>%s</button>',
+			'<button type="button" class="cookie-preferences-btn" onclick="%s">%s</button>',
+			esc_attr( $onclick ),
 			esc_html__( 'Manage cookie preferences', 'basecamp' )
 		);
 	}

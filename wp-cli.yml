@@ -1,0 +1,6 @@
+path: .
+
+# ServBay MySQL socket — WP-CLI needs this to connect when DB_HOST is 'localhost'
+# because PHP resolves 'localhost' to a socket path, not TCP.
+core config:
+  dbhost: localhost:/Applications/ServBay/tmp/mysql.sock

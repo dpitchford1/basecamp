@@ -8,6 +8,8 @@
  * @package basecamp
  */
 
+declare(strict_types=1);
+
 namespace Basecamp\ThemeFunctions;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Manages the repeater link-list meta box and its data.
  */
-class MetaLinkList {
+final class MetaLinkList {
 
 	/**
 	 * Register hooks (admin-only).
