@@ -1,8 +1,8 @@
 # Basecamp
 
-A performance-focused, modular WordPress starter theme for developers.
+A performance-focused, modular WordPress **parent theme** built for developer-controlled multi-project deployments.
 
-Basecamp ships with a comprehensive PHP module system, no-plugin SEO, automatic WebP conversion, responsive image helpers, and a Dart Sass CSS pipeline — everything you need to start a production project without ripping out framework opinions.
+Basecamp provides the full PHP module system, no-plugin SEO, automatic WebP conversion, responsive image helpers, and a Dart Sass CSS pipeline. Each project runs as a **child theme** that inherits all of Basecamp's infrastructure and adds only its own templates, assets, and feature modules — keeping the parent untouched and upgradeable.
 
 ---
 
@@ -19,8 +19,9 @@ Basecamp ships with a comprehensive PHP module system, no-plugin SEO, automatic 
 ```bash
 # In your WordPress themes directory
 git clone https://github.com/your-org/basecamp.git
-wp theme activate basecamp
 ```
+
+Basecamp is a **parent theme** — activate a child theme, not Basecamp directly. See [Child Theme Usage](#child-theme-usage) below.
 
 Or download as a ZIP and upload via **Appearance → Themes → Add New → Upload Theme**.
 
@@ -28,13 +29,14 @@ Or download as a ZIP and upload via **Appearance → Themes → Add New → Uplo
 
 ## Environment Setup
 
-Copy `wp-config-sample.php` to `wp-config.php` and set the environment variable before starting:
+Copy `wp-config-sample.php` to `wp-config.php` and add:
 
-```bash
-export BASECAMP_ENV=local   # local | staging | production (default)
+```php
+define( 'WP_ENVIRONMENT_TYPE', 'local' ); // local | staging | production
+define( 'WP_DEBUG', true );
 ```
 
-Debug constants, `DISALLOW_FILE_MODS`, `FORCE_SSL_ADMIN`, and cron settings are all driven by this single variable.
+`WP_ENVIRONMENT_TYPE` controls DevPilot visibility and analytics behaviour. On production, omit the constant or set it to `'production'`.
 
 ---
 
@@ -53,14 +55,16 @@ Modules are grouped in `functions.php` by area:
 
 | Group | Path |
 |---|---|
+| Core setup | `inc/class-basecamp.php` |
 | Frontend helpers | `inc/frontend/` |
 | Admin customisations | `inc/admin/` |
-| SEO (titles, meta, social) | `inc/seo/` |
+| SEO (titles, meta, social, schema) | `inc/seo/` |
+| Theme functions (link list, analytics) | `inc/theme-functions/` |
+| Image optimisation (WebP, regen) | `inc/img-optimization/` |
 | REST API endpoints | `inc/rest/` |
 | Scheduled events (cron) | `inc/core/` |
-| Development tools | `inc/development/` |
-| WooCommerce | `inc/woocommerce/` |
-| Custom post types | `inc/theme-functions/` |
+| Development tools (local only) | `inc/development/` |
+| WooCommerce (disabled by default) | `inc/woocommerce/` |
 
 ---
 
@@ -72,9 +76,12 @@ basecamp/
   inc/
     class-basecamp.php         Theme setup, image sizes, menus, body classes
     frontend/
-      class-basecamp-frontend.php   picture(), page_navi(), related_posts(), etc.
+      class-basecamp-frontend.php   output_critical_css(), page_navi(), related_posts(), etc.
       class-basecamp-svg-icons.php  Centralised SVG icon registry
       remove-bloat.php              Strips unused WordPress default output
+      class-basecamp-toast.php      Dismissable announcement bar
+      basecamp-page-helpers.php     Page conditional helpers
+      basecamp-subnav.php           Contextual child/sibling subnav
     seo/
       basecamp-title-functions.php  Context-aware <title> via extension classes
       basecamp-meta-description-functions.php
@@ -82,9 +89,13 @@ basecamp/
     admin/
       class-basecamp-admin.php      Login branding, dashboard, editor tweaks
       basecamp-admin-helpers.php    Sanitisers, Customizer helpers
+      class-basecamp-settings.php   Theme Settings page (Appearance → Theme Settings)
+      class-basecamp-docs.php       In-admin Docs viewer
+      class-basecamp-page-theme.php Page → Theme assignment column + meta box
     img-optimization/
       basecamp-webp-functions.php   Frontend WebP URL substitution
       basecamp-webp-conversion.php  Upload-time JPEG/PNG → WebP conversion
+      basecamp-thumb-regen.php      Thumbnail regeneration tool
     core/
       basecamp-scheduled-events.php  Cron intervals, scheduling, callbacks
     rest/
@@ -92,18 +103,57 @@ basecamp/
     woocommerce/
       woocommerce-functions.php      WooCommerce theme support scaffold
     theme-functions/
-      basecamp-cpt-scaffold.php      Example CPT + taxonomy (commented out by default)
+      basecamp-meta-link-list.php    Link list repeater meta box
+      basecamp-analytics.php         GA4 integration
+      basecamp-cpt-scaffold.php      Example CPT + taxonomy (disabled by default)
+      basecamp-category-url.php      Category URL rewrite (disabled by default)
     development/
       class-basecamp-development.php  DevPilot local debug bar
-  assets/
-    css/
-      scss/                   Dart Sass source
-      build/                  Compiled .min.css (committed)
-    js/
-    img/
   Docs/
     developer/                Module-level reference docs
-    planning/                 Roadmap, todo, overview
+    planning/                 Project roadmap and todos
+```
+
+---
+
+## Child Theme Usage
+
+Each project using Basecamp as a parent gets its own child theme. The child:
+
+- Declares `Template: basecamp` in its `style.css` header
+- Has its own `functions.php` that only loads project-specific modules
+- Never re-requires any parent module file
+- Never redefines any `Basecamp\*` namespaced class
+
+### Child theme `functions.php` rules
+
+| Do | Don't |
+|---|---|
+| `require_once` new project modules under `inc/` | Re-require parent modules |
+| Call `Basecamp\Admin\Settings::get()` | Call `Basecamp_Settings::init()` (parent already does this) |
+| Override `add_theme_support()` via `after_setup_theme` | Duplicate parent setup logic |
+| Declare global template functions in `functions.php` (no namespace) | Define global functions inside a namespaced `inc/` file |
+
+### Namespacing
+
+Child theme classes live under a project-specific namespace (e.g. `Kaneism\ThemeFunctions`). Any function called directly from a template must be wrapped as a plain global function in the child's `functions.php`:
+
+```php
+// In child functions.php — exposes namespaced helper to templates
+function my_theme_helper( ?int $post_id = null ): array {
+    return \MyTheme\ThemeFunctions\my_theme_helper( $post_id );
+}
+```
+
+### Extending theme supports
+
+To add `post-thumbnails` support for a custom post type registered by a plugin:
+
+```php
+// In child functions.php
+add_action( 'after_setup_theme', function (): void {
+    add_theme_support( 'post-thumbnails', [ 'post', 'page', 'my-cpt' ] );
+} );
 ```
 
 ---
@@ -190,14 +240,19 @@ See [Docs/developer/04-scss-system.md](Docs/developer/04-scss-system.md) for bre
 
 ## WooCommerce
 
-WooCommerce support is included but disabled by default. To activate:
+WooCommerce support is included in `inc/woocommerce/woocommerce-functions.php` but disabled in the parent by default. Activation is done in the **child theme**:
 
 1. Install and activate the WooCommerce plugin.
-2. In `functions.php`, uncomment the WooCommerce load line:
+2. In the child theme's `functions.php`, add WooCommerce theme support:
+   ```php
+   add_action( 'after_setup_theme', function (): void {
+       add_theme_support( 'woocommerce' );
+   } );
+   ```
+3. To enable the parent's WooCommerce scaffold (sidebar removal, WC-specific hooks), uncomment in the **parent** `functions.php`:
    ```php
    require_once __DIR__ . '/inc/woocommerce/woocommerce-functions.php';
    ```
-3. `woocommerce-functions.php` handles `add_theme_support( 'woocommerce' )`, sidebar removal, and WooCommerce-specific hooks automatically once loaded.
 
 ---
 
@@ -208,12 +263,14 @@ Full module-level reference is in [`Docs/developer/`](Docs/developer/):
 | File | Covers |
 |---|---|
 | `00-setup.md` | Install, plugins, first-run checklist |
-| `01-architecture.md` | Module system, load order, hook inventory |
+| `01-architecture.md` | Module system, load order, parent/child structure |
 | `02-code-style.md` | Naming, escaping, class patterns |
-| `03-metaboxes.md` | Link list and video carousel meta boxes |
+| `03-metaboxes.md` | Link list, video carousel, page→theme meta boxes |
 | `04-scss-system.md` | Dart Sass, breakpoints, responsive coordinator |
-| `05-images-media.md` | Image sizes, WebP pipeline, `picture()` helper |
+| `05-images-media.md` | Image sizes, WebP pipeline, `output_critical_css()` |
 | `06-seo.md` | Title manager, meta descriptions, Open Graph |
+| `07-theme-settings.md` | Appearance → Theme Settings reference |
+| `08-frontend-helpers.md` | Toast, subnav, page conditionals, RemoveBloat |
 
 ---
 

@@ -151,7 +151,7 @@
                 <a class="bubble--contents <?php if (is_page('cart')) { echo 'is--selected'; } ?>" href="/cart/">Cart <span class="bubble--count"><?php echo sprintf ( _n( '%d item', '%d items', WC()->cart->get_cart_contents_count() ), WC()->cart->get_cart_contents_count() ); ?></span>
 			</a></p>
             <div class="header--cart">
-                <a class="cart--content <?php if (is_page('cart')) { echo 'is--selected'; } ?>" href="<?php echo wc_get_cart_url(); ?>" title="View your shopping cart"><span class="cart--label">Cart:</span> <span class="count"><?php echo sprintf ( _n( '%d item', '%d items', WC()->cart->get_cart_contents_count() ), WC()->cart->get_cart_contents_count() ); ?> – <?php echo WC()->cart->get_cart_total(); ?></span></a>
+                <a class="cart--content <?php if (is_page('cart')) { echo 'is--selected'; } ?>" href="<?php echo wc_get_cart_url(); ?>" title="View your shopping cart"><span class="cart--label">Cart:</span> <span class="count"><?php echo sprintf ( _n( '%d item', '%d items', WC()->cart->get_cart_contents_count() ), WC()->cart->get_cart_contents_count() ); ?> - <?php echo WC()->cart->get_cart_total(); ?></span></a>
             </div>
             <?php endif ?><?php /* cart not empty */ ?>
             <?php endif ?><?php /* if WC is active */ ?>

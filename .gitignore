@@ -19,20 +19,14 @@
 .gitignore
 basecamp.code-workspace
 *.DS_Store
-.gitignore
 .vscode/
+.github/
 
 # Configuration
 wp-config.php
 
 # Example themes
 /wp-content/themes/twenty*/
-#/wp-content/themes/basecamp/templates/
-/wp-content/themes/basecamp/not used/
-/wp-content/themes/basecamp/inc/*archive/
-/wp-content/themes/basecamp/inc/examples/
-/wp-content/themes/basecamp/examples/
-/wp-content/themes/basecamp/inc/woocommerce/
 
 # Personal Child Themes
 /wp-content/themes/dish/
@@ -42,8 +36,10 @@ wp-config.php
 /wp-content/themes/basecamp/inc/admin/assets/
 /_old-dish-files/
 /assets/_archive/
-.github/copilot-instructions.md
 
+#/wp-content/themes/basecamp/templates/
+/wp-content/themes/basecamp/inc/*archive/
+/wp-content/themes/basecamp/inc/woocommerce/
 
 # WP plugins
 /wp-content/plugins/_archive

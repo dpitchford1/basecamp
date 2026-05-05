@@ -10,8 +10,8 @@ Steps to get a working local or staging environment from the repository. Items m
 
 | Requirement | Minimum | Production |
 |---|---|---|
-| WordPress | 6.0 | Latest stable |
-| PHP | 7.4 | 8.5 |
+| WordPress | 6.4 | Latest stable |
+| PHP | 8.0 | 8.2+ |
 | MySQL | 8.0 | 8.0 |
 | MariaDB | 10.5 | — |
 
@@ -47,10 +47,12 @@ For a full feature overview, open the **Docs** panel inside wp-admin (Dashboard 
 |---|---|
 | `wp-config.php` | Create from `wp-config-sample.php` |
 | `wp-content/uploads/` | Pull from production or staging |
-| `assets/css/build/` | Regenerate via Live Sass Compiler (open any `.scss` file and save) |
+| `assets/css/build/` | Regenerate via Live Sass Compiler |
+| Child theme `assets/*/build/` | Regenerate from child theme SCSS source |
 | `assets/fonts/` | Source from project assets |
 | `assets/img/` | Source from project assets |
 | Plugin: **Classic Editor** | Install from wp-admin → Plugins |
+| Plugin: **WooCommerce** | Install if the project uses the shop |
 | Plugin: **WP Sweep** | Install from wp-admin → Plugins (dev utility) |
 
 ---
@@ -66,7 +68,8 @@ cd basecamp
 ### 2. Create `wp-config.php`
 Copy `wp-config-sample.php` to `wp-config.php` and configure:
 - Database credentials
-- `WP_DEBUG true` for local dev
+- `define( 'WP_DEBUG', true )` for local dev
+- `define( 'WP_ENVIRONMENT_TYPE', 'local' )` — controls DevPilot visibility and analytics behaviour
 - `WP_HOME` / `WP_SITEURL` if using a custom local domain
 
 ### 3. Import the database
@@ -118,9 +121,9 @@ Both tools activate automatically in a local environment — no configuration ne
 ### DevPilot Overlay
 
 **File:** `inc/development/class-basecamp-development.php`  
-**Trigger:** `REMOTE_ADDR` is `127.0.0.1` or `::1`
+**Trigger:** `WP_ENVIRONMENT_TYPE === 'local'` (primary) or `REMOTE_ADDR` is `127.0.0.1` / `::1` (fallback)
 
-A collapsible drawer injected into `wp_footer` on every frontend page load. Automatically absent on any non-localhost IP — nothing to toggle or disable.
+A collapsible drawer injected into `wp_footer` on every frontend page load. Automatically absent on any non-local environment — nothing to toggle or disable.
 
 **What it shows:**
 
@@ -132,7 +135,7 @@ A collapsible drawer injected into `wp_footer` on every frontend page load. Auto
 | Taxonomy | Term name and taxonomy slug on archive pages |
 | HTML Outline Analysis | Button that triggers a full heading hierarchy analysis of the current page — useful for catching heading order issues |
 
-**Assets:** CSS and JS are loaded from `assets/development/` (gitignored — must be present locally). The drawer has its own scoped stylesheet (`devpilot-drawer.min.css`) and an HTML outline analyser (`html-outline.min.js`).
+**Assets:** CSS and JS are bundled inside the theme at `inc/development/css/` and `inc/development/js/` and are enqueued via `wp_enqueue_style` / `wp_enqueue_script` — no manual file copying required.
 
 ---
 
@@ -165,5 +168,5 @@ A form at the top accepts any URL on the site — submit it and all iframes relo
 
 ## Notes
 
-- `WP_DEBUG` is controlled by the `BASECAMP_ENV` environment variable — set `BASECAMP_ENV=local` for full debug output locally. Never set `BASECAMP_ENV=local` on production.
-- GA4 fires on all environments but only sends config hits when `BASECAMP_ENV` is `production` (or unset). Configure the GA4 Measurement ID at **Appearance → Theme Settings** — no code change needed.
+- `WP_DEBUG` is set in `wp-config.php`. Use `define( 'WP_ENVIRONMENT_TYPE', 'local' )` for local dev — this also activates DevPilot. Never set `WP_ENVIRONMENT_TYPE=local` on production.
+- GA4 fires on all environments but only sends config hits when `WP_ENVIRONMENT_TYPE` is `production` (or unset). Configure the GA4 Measurement ID at **Appearance → Theme Settings** — no code change needed.
