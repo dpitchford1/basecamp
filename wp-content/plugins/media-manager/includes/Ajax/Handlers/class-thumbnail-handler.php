@@ -20,7 +20,7 @@ final class ThumbnailHandler {
 	public function regen_thumbnails(): void {
 		$this->verify( 'edit_others_posts' );
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 
 		if ( ! class_exists( '\MediaManager\Thumbnails\RegenManager' ) ) {
 			require_once MM_PLUGIN_DIR . 'includes/Thumbnails/class-regen-manager.php';
@@ -34,7 +34,7 @@ final class ThumbnailHandler {
 	public function regen_process(): void {
 		$this->verify( 'edit_others_posts' );
 
-		$chunk_index = isset( $_POST['chunk_index'] ) ? (int) $_POST['chunk_index'] : 0;
+		$chunk_index = isset( $_POST['chunk_index'] ) ? (int) wp_unslash( $_POST['chunk_index'] ) : 0;
 
 		if ( ! class_exists( '\MediaManager\Thumbnails\RegenManager' ) ) {
 			require_once MM_PLUGIN_DIR . 'includes/Thumbnails/class-regen-manager.php';

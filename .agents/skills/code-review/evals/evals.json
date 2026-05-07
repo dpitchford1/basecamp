@@ -1,0 +1,29 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run a full code review of the media-manager plugin",
+      "expected_output": "Findings across Parts A–D grouped by section with severity icons, file paths, and suggested fixes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Review Part A — Security for the work plugin",
+      "expected_output": "Findings scoped to A4 only: output escaping, input sanitisation, nonce checks, capability checks.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "What was the weather like yesterday?",
+      "expected_output": "Skill should not activate.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Run a periodic code review of the work plugin against project standards",
+      "expected_output": "Skill activates. Full Parts A–D review output.",
+      "files": []
+    }
+  ]
+}

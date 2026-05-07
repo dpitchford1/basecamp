@@ -35,7 +35,7 @@ final class FolderHandler {
 		$name      = isset( $_POST['name'] )
 			? sanitize_file_name( wp_unslash( $_POST['name'] ) )
 			: '';
-		$parent_id = isset( $_POST['parent_id'] ) ? (int) $_POST['parent_id'] : 0;
+		$parent_id = isset( $_POST['parent_id'] ) ? (int) wp_unslash( $_POST['parent_id'] ) : 0;
 
 		if ( ! $name ) {
 			wp_send_json_error( [ 'message' => __( 'Folder name is required.', 'media-manager' ) ], 400 );
@@ -58,7 +58,7 @@ final class FolderHandler {
 	public function delete_folder(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		if ( ! $folder_id ) {
 			wp_send_json_error( [ 'message' => __( 'No folder specified.', 'media-manager' ) ], 400 );
 		}
@@ -75,7 +75,7 @@ final class FolderHandler {
 	public function hide_folder(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		$hidden    = isset( $_POST['hidden'] ) ? (bool) $_POST['hidden'] : true;
 
 		if ( ! $folder_id ) {
@@ -109,7 +109,7 @@ final class FolderHandler {
 	public function sync_folder(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		if ( ! $folder_id ) {
 			wp_send_json_error( [ 'message' => __( 'No folder specified.', 'media-manager' ) ], 400 );
 		}
@@ -130,8 +130,8 @@ final class FolderHandler {
 	public function sync_chunk(): void {
 		$this->verify();
 
-		$folder_id   = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
-		$chunk_index = isset( $_POST['chunk_index'] ) ? (int) $_POST['chunk_index'] : 0;
+		$folder_id   = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
+		$chunk_index = isset( $_POST['chunk_index'] ) ? (int) wp_unslash( $_POST['chunk_index'] ) : 0;
 
 		if ( ! class_exists( '\MediaManager\FileSystem\SyncManager' ) ) {
 			require_once MM_PLUGIN_DIR . 'includes/FileSystem/class-sync-manager.php';

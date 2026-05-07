@@ -27,7 +27,7 @@ final class SettingsHandler {
 
 		// Numeric options: only update when present.
 		if ( isset( $_POST['mm_items_per_page'] ) ) {
-			update_option( 'mm_items_per_page', max( 1, (int) $_POST['mm_items_per_page'] ) );
+			update_option( 'mm_items_per_page', max( 1, (int) wp_unslash( $_POST['mm_items_per_page'] ) ) );
 		}
 
 		wp_send_json_success( [ 'message' => __( 'Settings saved.', 'media-manager' ) ] );

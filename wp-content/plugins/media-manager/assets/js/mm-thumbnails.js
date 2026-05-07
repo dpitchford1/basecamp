@@ -8,7 +8,7 @@
 
 	var totalChunks  = 0;
 	var currentChunk = 0;
-	var totalFiles   = 0;
+	var totalFiles   = 0; 
 
 	$( document ).ready( function () {
 		if ( ! $( '#mm-regen-start' ).length ) { return; }

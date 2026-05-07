@@ -6,7 +6,7 @@
    ========================================================================== */
 
 ( function ( $, mm ) {
-	'use strict';
+	'use strict'; 
 
 	/* -----------------------------------------------------------------------
 	   Shared namespace
@@ -52,14 +52,34 @@
 		},
 
 		/* Utilities */
+
+		/**
+		 * Return a translated string from mm_ajax.i18n, falling back to the provided default.
+		 *
+		 * @param  {string} key      i18n key passed from wp_localize_script.
+		 * @param  {string} fallback Default text used when the key is absent.
+		 * @return {string}
+		 */
 		t: function ( key, fallback ) {
 			return ( mm.i18n && mm.i18n[ key ] ) ? mm.i18n[ key ] : fallback;
 		},
 
+		/**
+		 * Escape a string for safe insertion as HTML text content.
+		 *
+		 * @param  {*}      str  Value to escape. Coerced to string.
+		 * @return {string}      HTML-safe string.
+		 */
 		escHtml: function ( str ) {
 			return $( '<span>' ).text( String( str ) ).html();
 		},
 
+		/**
+		 * Escape a string for safe insertion into an HTML attribute value.
+		 *
+		 * @param  {*}      str  Value to escape. Coerced to string.
+		 * @return {string}      Attribute-safe string.
+		 */
 		escAttr: function ( str ) {
 			return String( str )
 				.replace( /&/g, '&amp;' ).replace( /"/g, '&quot;' )

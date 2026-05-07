@@ -170,6 +170,6 @@
 
 	function escHtml( str ) {
 		return $( '<span>' ).text( String( str ) ).html();
-	}
+	} 
 
 }( jQuery, window.mm_ajax || {} ) );

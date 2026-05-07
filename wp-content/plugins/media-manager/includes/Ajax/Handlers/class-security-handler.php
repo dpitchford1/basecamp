@@ -25,7 +25,7 @@ final class SecurityHandler {
 	public function toggle_file_access(): void {
 		$this->verify( 'manage_options' );
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		$protect   = isset( $_POST['protect'] ) ? (bool) $_POST['protect'] : true;
 		$path      = FolderRepository::get_path( $folder_id );
 
@@ -133,7 +133,7 @@ final class SecurityHandler {
 					break;
 				case 'int':
 					if ( isset( $_POST[ $key ] ) ) {
-						update_option( $key, (int) $_POST[ $key ], true );
+						update_option( $key, (int) wp_unslash( $_POST[ $key ] ), true );
 					}
 					break;
 				default:

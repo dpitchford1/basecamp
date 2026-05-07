@@ -8,14 +8,26 @@
 	'use strict';
 
 	var s  = lib.state;
-	var mm = lib.mm;
+	var mm = lib.mm; 
 
+	/**
+	 * Shorthand i18n lookup delegating to lib.t.
+	 *
+	 * @param  {string} key      i18n key.
+	 * @param  {string} fallback Default text.
+	 * @return {string}
+	 */
 	function t( key, fallback ) { return lib.t( key, fallback ); }
 
 	/* -----------------------------------------------------------------------
 	   Tree init
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch folder tree data from the server and initialise the jsTree widget.
+	 *
+	 * @return {void}
+	 */
 	lib.initTree = function () {
 		$.post( mm.url, { action: 'mm_folder_tree', nonce: mm.nonce }, function ( r ) {
 			if ( ! r.success ) { showTreeError( r.data && r.data.message ); return; }
@@ -23,6 +35,12 @@
 		} ).fail( showTreeError );
 	};
 
+	/**
+	 * Construct the jsTree instance from the server-supplied node list.
+	 *
+	 * @param  {Array<{id: string, text: string, data: object}>} nodes  jsTree-compatible node objects.
+	 * @return {void}
+	 */
 	function buildTree( nodes ) {
 		s.$tree.jstree( {
 			core: {
@@ -67,6 +85,11 @@
 		s.$tree.on( 'refresh.jstree', lib.flattenTreeForSelect );
 	}
 
+	/**
+	 * Refresh the folder tree from the server without a full page reload.
+	 *
+	 * @return {void}
+	 */
 	lib.reloadTree = function () {
 		$.post( mm.url, { action: 'mm_refresh_folders', nonce: mm.nonce }, function ( r ) {
 			if ( r.success ) {
@@ -77,6 +100,12 @@
 		} );
 	};
 
+	/**
+	 * Populate the shared state.protectedFolderIds map from the server.
+	 * Used by the context menu to show the correct protect/unprotect label.
+	 *
+	 * @return {void}
+	 */
 	function loadProtectedFolderIds() {
 		$.post( mm.url, { action: 'mm_get_protected_files', nonce: mm.nonce }, function ( r ) {
 			s.protectedFolderIds = {};
@@ -88,6 +117,12 @@
 		} );
 	}
 
+	/**
+	 * Replace the tree pane content with an error message.
+	 *
+	 * @param  {string} [message]  Error text. Defaults to a generic i18n string.
+	 * @return {void}
+	 */
 	function showTreeError( message ) {
 		message = message || t( 'tree_error', 'Could not load folder tree.' );
 		s.$tree.html( '<p class="mm-error">' + lib.escHtml( message ) + '</p>' );
@@ -97,6 +132,12 @@
 	   Context menu
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Build the jsTree context menu item map for the given node.
+	 *
+	 * @param  {object} node  jsTree node object.
+	 * @return {object}       Map of menu-item-key → jsTree menu item config.
+	 */
 	function buildContextMenu( node ) {
 		var folderId    = node.data && node.data.folder_id ? node.data.folder_id : 0;
 		var isProtected = folderId > 0 && s.protectedFolderIds[ folderId ];
@@ -129,6 +170,12 @@
 		};
 	}
 
+	/**
+	 * Prompt the user for a folder name and create it as a child of parentId.
+	 *
+	 * @param  {number} parentId  ID of the parent mm_folder post (0 for root).
+	 * @return {void}
+	 */
 	function promptCreateFolder( parentId ) {
 		var name = window.prompt( t( 'new_folder_name', 'New folder name:' ) );
 		if ( ! name ) { return; }
@@ -144,6 +191,12 @@
 		} );
 	}
 
+	/**
+	 * Hide a folder from the tree by setting its _mm_hidden flag on the server.
+	 *
+	 * @param  {number} folderId  ID of the mm_folder post to hide.
+	 * @return {void}
+	 */
 	function toggleHideFolder( folderId ) {
 		$.post( mm.url, {
 			action: 'mm_hide_folder', nonce: mm.nonce,
@@ -155,6 +208,12 @@
 		} );
 	}
 
+	/**
+	 * Ask for confirmation then delete an empty folder.
+	 *
+	 * @param  {number} folderId  ID of the mm_folder post to delete.
+	 * @return {void}
+	 */
 	function confirmDeleteFolder( folderId ) {
 		if ( ! window.confirm( t( 'confirm_delete_folder', 'Delete this folder? It must be empty.' ) ) ) { return; }
 		$.post( mm.url, {
@@ -174,6 +233,13 @@
 		} );
 	}
 
+	/**
+	 * Toggle BDA (.htaccess) protection on or off for a folder.
+	 *
+	 * @param  {number}  folderId           ID of the mm_folder post.
+	 * @param  {boolean} currentlyProtected Whether the folder is currently protected.
+	 * @return {void}
+	 */
 	function toggleFolderProtection( folderId, currentlyProtected ) {
 		$.post( mm.url, {
 			action:    'mm_toggle_file_access',
@@ -193,6 +259,11 @@
 		} );
 	}
 
+	/**
+	 * Bind toolbar folder-level action buttons (e.g. Refresh Tree).
+	 *
+	 * @return {void}
+	 */
 	lib.initFolderActions = function () {
 		$( document ).on( 'click', '#mm-refresh-tree', lib.reloadTree );
 	};
@@ -201,6 +272,12 @@
 	   Folder thumbnail hover preview (Todo 7)
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Attach hover listeners to tree nodes to show a thumbnail strip preview
+	 * after a short delay. Preview is hidden on mouse-leave.
+	 *
+	 * @return {void}
+	 */
 	lib.initFolderPreview = function () {
 		var $preview   = $( '#mm-folder-preview' );
 		var hoverTimer = null;
@@ -257,6 +334,11 @@
 	   Recent uploads filter (Todo 8)
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind recent-uploads filter buttons and the clear-filter control.
+	 *
+	 * @return {void}
+	 */
 	lib.initRecentFilter = function () {
 		$( document ).on( 'click', '.mm-recent-btn', function () {
 			var days = parseInt( $( this ).data( 'days' ), 10 );

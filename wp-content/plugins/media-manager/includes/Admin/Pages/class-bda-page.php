@@ -179,35 +179,6 @@ final class BdaPage {
 			</p>
 
 		</div><!-- .wrap#mm-bda-wrap -->
-
-		<script>
-		jQuery( document ).ready( function ( $ ) {
-			// Settings form submit (triggered by both the form itself and the bottom save button).
-			function submitBdaSettings() {
-				var data = $( '#mm-bda-settings-form' ).serializeArray();
-				$.post( window.mm_ajax ? window.mm_ajax.url : ajaxurl, $.param( data ), function ( r ) {
-					var type    = r.success ? 'success' : 'error';
-					var message = ( r.data && r.data.message ) ? r.data.message : ( r.success ? 'Saved.' : 'Error.' );
-					$( '#mm-bda-notice' ).html(
-						'<div class="mm-notice mm-notice-' + type + '">' + $( '<span>' ).text( message ).html() + '</div>'
-					);
-					if ( r.success ) { $( 'html, body' ).animate( { scrollTop: 0 }, 300 ); }
-				} );
-			}
-
-			$( '#mm-bda-settings-form' ).on( 'submit', function ( e ) {
-				e.preventDefault();
-				submitBdaSettings();
-			} );
-
-			$( '#mm-bda-save-btn' ).on( 'click', submitBdaSettings );
-
-			// IP select-all.
-			$( '#mm-ip-select-all' ).on( 'change', function () {
-				$( '.mm-ip-check' ).prop( 'checked', $( this ).prop( 'checked' ) );
-			} );
-		} );
-		</script>
 		<?php
 	}
 }

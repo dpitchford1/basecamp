@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace MediaManager\Admin;
 
+use MediaManager\Data\FolderRepository;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -42,13 +44,7 @@ final class ThumbnailsPage {
 						<select id="mm-regen-folder" name="folder_id">
 							<option value="0"><?php esc_html_e( '— All folders —', 'media-manager' ); ?></option>
 							<?php
-							$folders = get_posts( [
-								'post_type'      => MM_POST_TYPE,
-								'post_status'    => 'publish',
-								'posts_per_page' => -1,
-								'orderby'        => 'title',
-								'order'          => 'ASC',
-							] );
+						$folders = FolderRepository::get_all();
 							foreach ( $folders as $folder ) {
 								printf(
 									'<option value="%d">%s</option>',

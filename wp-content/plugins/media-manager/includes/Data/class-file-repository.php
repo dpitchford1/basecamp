@@ -225,6 +225,55 @@ final class FileRepository {
 	}
 
 	/**
+	 * Return a paginated list of attachment IDs uploaded within the last N days,
+	 * plus the total found_posts count for pagination.
+	 *
+	 * @param  int $days     Number of days to look back.
+	 * @param  int $per_page Number of items per page.
+	 * @param  int $page     1-based page number.
+	 * @return array{ ids: int[], total: int }
+	 */
+	public static function get_recent( int $days, int $per_page, int $page ): array {
+		$query = new \WP_Query( [
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => $per_page,
+			'paged'          => $page,
+			'no_found_rows'  => false,
+			'fields'         => 'ids',
+			'date_query'     => [ [ 'after' => $days . ' days ago', 'inclusive' => true ] ],
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		] );
+
+		return [
+			'ids'   => array_map( 'intval', (array) $query->posts ),
+			'total' => (int) $query->found_posts,
+		];
+	}
+
+	/**
+	 * Find an attachment post ID by its relative upload path (_wp_attached_file meta).
+	 *
+	 * @param  string $relative  Path relative to the uploads directory.
+	 * @return int               Post ID, or 0 if not found.
+	 */
+	public static function find_id_by_path( string $relative ): int {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$id = $wpdb->get_var( $wpdb->prepare(
+			"SELECT post_id FROM {$wpdb->postmeta}
+			 WHERE meta_key = '_wp_attached_file'
+			   AND meta_value = %s
+			 LIMIT 1",
+			$relative
+		) );
+
+		return $id ? (int) $id : 0;
+	}
+
+	/**
 	 * Bulk-insert attachment → folder rows efficiently.
 	 * Skips duplicates (INSERT IGNORE).
 	 *

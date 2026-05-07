@@ -44,7 +44,7 @@ final class LibraryHandler {
 	public function load_folder(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 
 		if ( ! $folder_id ) {
 			wp_send_json_error( [ 'message' => __( 'No folder specified.', 'media-manager' ) ], 400 );
@@ -70,14 +70,14 @@ final class LibraryHandler {
 	public function folder_contents(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		if ( ! $folder_id ) {
 			wp_send_json_error( [ 'message' => __( 'No folder specified.', 'media-manager' ) ], 400 );
 		}
 
 		$sort        = $this->get_sort_params();
 		$per_page    = (int) get_option( 'mm_items_per_page', 500 );
-		$page        = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
+		$page        = isset( $_POST['page'] ) ? max( 1, (int) wp_unslash( $_POST['page'] ) ) : 1;
 		$offset      = ( $page - 1 ) * $per_page;
 		$orderby     = 'date' === $sort['field'] ? 'post_date' : 'post_title';
 		$total_count = FileRepository::get_count_by_folder( $folder_id );
@@ -115,7 +115,7 @@ final class LibraryHandler {
 	public function folder_thumbs(): void {
 		$this->verify();
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		if ( ! $folder_id ) {
 			wp_send_json_success( [ 'thumbs' => [] ] );
 		}
@@ -138,27 +138,16 @@ final class LibraryHandler {
 	public function recent_files(): void {
 		$this->verify();
 
-		$days     = isset( $_POST['days'] ) ? max( 1, (int) $_POST['days'] ) : 7;
+		$days     = isset( $_POST['days'] ) ? max( 1, (int) wp_unslash( $_POST['days'] ) ) : 7;
 		$per_page = (int) get_option( 'mm_items_per_page', 50 );
-		$page     = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
+		$page     = isset( $_POST['page'] ) ? max( 1, (int) wp_unslash( $_POST['page'] ) ) : 1;
 
-		$query = new \WP_Query( [
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'posts_per_page' => $per_page,
-			'paged'          => $page,
-			'no_found_rows'  => false,
-			'fields'         => 'ids',
-			'date_query'     => [ [ 'after' => $days . ' days ago', 'inclusive' => true ] ],
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-		] );
-
-		$files = $this->build_file_data( array_map( 'intval', (array) $query->posts ) );
+		$result = FileRepository::get_recent( $days, $per_page, $page );
+		$files  = $this->build_file_data( $result['ids'] );
 
 		wp_send_json_success( [
 			'files'    => $files,
-			'total'    => (int) $query->found_posts,
+			'total'    => $result['total'],
 			'page'     => $page,
 			'per_page' => $per_page,
 		] );
@@ -172,7 +161,7 @@ final class LibraryHandler {
 
 		global $wpdb;
 		$per_page    = (int) get_option( 'mm_items_per_page', 50 );
-		$page        = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
+		$page        = isset( $_POST['page'] ) ? max( 1, (int) wp_unslash( $_POST['page'] ) ) : 1;
 		$files_table = $wpdb->prefix . 'mm_files';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery

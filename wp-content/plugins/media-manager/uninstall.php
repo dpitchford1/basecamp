@@ -45,11 +45,7 @@ $options = [
 	'mm_items_per_page',
 	'mm_disable_scaling',
 	'mm_skip_webp',
-	'mm_ip_blocking_enabled',
-	'mm_bda_enabled',
-	'mm_bda_prevent_listing',
-	'mm_bda_prevent_hotlinking',
-	'mm_bda_user_role',
+        'mm_strip_exif',
 	'mm_bda_no_access_page_id',
 	'mm_upload_folder_name',
 	'mm_upload_folder_id',
@@ -78,7 +74,7 @@ foreach ( $protected_ids as $folder_id ) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Delete all mm_folder CPT posts (and their post meta)
+// 4. Delete all mm_folder CPT posts (and their post meta)
 // ---------------------------------------------------------------------------
 
 $folder_ids = get_posts( [
@@ -93,14 +89,14 @@ foreach ( $folder_ids as $post_id ) {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Delete per-user sort preference meta
+// 5. Delete per-user sort preference meta
 // ---------------------------------------------------------------------------
 
 $wpdb->delete( $wpdb->usermeta, [ 'meta_key' => 'mm_sort_field' ] );
 $wpdb->delete( $wpdb->usermeta, [ 'meta_key' => 'mm_sort_direction' ] );
 
 // ---------------------------------------------------------------------------
-// 7. Clear cron (safety net)
+// 6. Clear cron (safety net)
 // ---------------------------------------------------------------------------
 
 wp_clear_scheduled_hook( 'mm_folder_scan' );

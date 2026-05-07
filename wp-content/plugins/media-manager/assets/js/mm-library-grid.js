@@ -8,14 +8,28 @@
 	'use strict';
 
 	var s  = lib.state;
-	var mm = lib.mm;
+	var mm = lib.mm; 
 
+	/**
+	 * Shorthand i18n lookup delegating to lib.t.
+	 *
+	 * @param  {string} key      i18n key.
+	 * @param  {string} fallback Default text.
+	 * @return {string}
+	 */
 	function t( key, fallback ) { return lib.t( key, fallback ); }
 
 	/* -----------------------------------------------------------------------
 	   Load folder (entry point — dispatches to the right fetch function)
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Entry point for loading a folder into the file grid.
+	 * Resets pagination, clears selections, and dispatches to the correct fetch function.
+	 *
+	 * @param  {number} folderId  mm_folder post ID, or -1 for the virtual Unassigned node.
+	 * @return {void}
+	 */
 	lib.loadFolder = function ( folderId ) {
 		s.activeFolderId = folderId;
 		s.filterMode     = null;
@@ -39,6 +53,13 @@
 	   Fetch: regular folder
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch a page of files for a regular folder and render the grid.
+	 *
+	 * @param  {number} folderId  mm_folder post ID.
+	 * @param  {number} page      1-based page number.
+	 * @return {void}
+	 */
 	function fetchPage( folderId, page ) {
 		s.$fileGrid.addClass( 'mm-loading' );
 		s.lastCheckedIdx = -1;
@@ -86,6 +107,12 @@
 	   Fetch: orphan attachments (virtual Unassigned node)
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch a page of attachment files not assigned to any folder (orphans).
+	 *
+	 * @param  {number} page  1-based page number.
+	 * @return {void}
+	 */
 	function fetchOrphanPage( page ) {
 		s.$fileGrid.addClass( 'mm-loading' );
 		s.lastCheckedIdx = -1;
@@ -118,6 +145,13 @@
 	   Fetch: recent-uploads filter
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch a page of recently-uploaded attachments matching the active time filter.
+	 *
+	 * @param  {number} days  Number of days to look back.
+	 * @param  {number} page  1-based page number.
+	 * @return {void}
+	 */
 	lib.fetchFilterPage = function ( days, page ) {
 		s.$fileGrid.addClass( 'mm-loading' );
 		s.lastCheckedIdx = -1;
@@ -151,6 +185,13 @@
 	   Grid render
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Render the file grid from a server-supplied file list.
+	 * Clears previous content and rebinds checkbox/click handlers.
+	 *
+	 * @param  {Array<object>} files  File data objects from the AJAX response.
+	 * @return {void}
+	 */
 	function renderGrid( files ) {
 		s.$fileGrid.empty();
 		s.lastCheckedIdx = -1;
@@ -171,6 +212,13 @@
 		s.$fileGrid.off( 'click',  '.mm-file-item'     ).on( 'click',  '.mm-file-item',     lib.handleItemClick );
 	}
 
+	/**
+	 * Build and return the HTML string for a single file grid item.
+	 *
+	 * @param  {object} file   File data object (id, is_image, thumbnail, title, mime, filename, edit_url).
+	 * @param  {number} index  Zero-based position in the current page, used for shift-click range selection.
+	 * @return {string}        HTML string for the .mm-file-item element.
+	 */
 	lib.renderFileItem = function ( file, index ) {
 		var media;
 		if ( file.is_image && file.thumbnail ) {
@@ -191,6 +239,12 @@
 	   Pagination
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind click handlers for pagination buttons.
+	 * Dispatches the correct fetch function based on the current filter/folder state.
+	 *
+	 * @return {void}
+	 */
 	lib.initPagination = function () {
 		$( document ).on( 'click', '.mm-page-btn:not([disabled])', function () {
 			var page = parseInt( $( this ).data( 'page' ), 10 );
@@ -210,6 +264,13 @@
 		} );
 	};
 
+	/**
+	 * Render prev/next/numbered pagination buttons into #mm-pagination.
+	 *
+	 * @param  {number} page        Current 1-based page number.
+	 * @param  {number} totalPages  Total number of pages.
+	 * @return {void}
+	 */
 	function renderPagination( page, totalPages ) {
 		var $pg = $( '#mm-pagination' );
 		if ( ! $pg.length || totalPages <= 1 ) { $pg.empty(); return; }
@@ -231,6 +292,14 @@
 		$pg.html( html );
 	}
 
+	/**
+	 * Return the page numbers to display, always including first, last, and a window
+	 * of 2 pages around the current page. Gaps are rendered as ellipses by the caller.
+	 *
+	 * @param  {number} current  Current 1-based page number.
+	 * @param  {number} total    Total number of pages.
+	 * @return {number[]}        Sorted, deduplicated page numbers to show.
+	 */
 	function pagesToShow( current, total ) {
 		var pages = [], p;
 		for ( p = 1; p <= total; p++ ) {
@@ -243,6 +312,11 @@
 	   Sort controls
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind click handlers for column sort buttons and trigger a re-fetch on change.
+	 *
+	 * @return {void}
+	 */
 	lib.initSortControls = function () {
 		$( document ).on( 'click', '.mm-sort-btn', function () {
 			var field = $( this ).data( 'field' );
@@ -275,6 +349,11 @@
 		} );
 	};
 
+	/**
+	 * Update sort button CSS classes to reflect the current sort field and direction.
+	 *
+	 * @return {void}
+	 */
 	function updateSortUI() {
 		$( '.mm-sort-btn' ).each( function () {
 			var $btn = $( this ), f = $btn.data( 'field' );
@@ -289,6 +368,13 @@
 	   Grid notices
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Insert a temporary notice banner below the content header, auto-dismissing after 6 s.
+	 *
+	 * @param  {string} message  Text to display.
+	 * @param  {string} [type]   WP admin notice type: 'success', 'warning', 'error', or 'info' (default).
+	 * @return {void}
+	 */
 	lib.showGridNotice = function ( message, type ) {
 		type = type || 'info';
 		var $notice = $( '<div class="notice notice-' + type + ' is-dismissible mm-grid-notice"><p>' + lib.escHtml( message ) + '</p></div>' );

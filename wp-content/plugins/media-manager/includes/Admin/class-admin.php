@@ -97,6 +97,12 @@ final class Admin {
 	/**
 	 * Attach contextual help tabs to each Media Manager admin screen.
 	 * Must be called after hook suffixes are known (admin_menu priority 11).
+	 *
+	 * Note: The add_action() calls below intentionally bypass the Loader.
+	 * Hook names are dynamic strings built from $hook suffixes resolved by
+	 * add_menu_page() / add_submenu_page() inside admin_menu — these values
+	 * are not available at wire-time, so the Loader cannot register them.
+	 * Direct add_action() is the correct pattern here.
 	 */
 	private function register_help_tabs(
 		string $library_hook,

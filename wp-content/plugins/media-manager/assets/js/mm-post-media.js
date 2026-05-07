@@ -10,7 +10,7 @@
 	if ( typeof wp === 'undefined' || ! wp.media ) { return; }
 
 	var ajaxUrl = mmAjax.url  || window.ajaxurl || '';
-	var nonce   = mmAjax.nonce || '';
+	var nonce   = mmAjax.nonce || ''; 
 
 	/* -----------------------------------------------------------------------
 	   Folder Browser State

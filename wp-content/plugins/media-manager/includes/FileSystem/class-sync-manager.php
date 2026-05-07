@@ -154,7 +154,7 @@ final class SyncManager {
 			$relative = ltrim( str_replace( $upload_base, '', $abs ), '/' );
 
 			// Look up by relative path in wp_posts + postmeta.
-			$attachment_id = $this->find_attachment_by_path( $relative );
+			$attachment_id = FileRepository::find_id_by_path( $relative );
 
 			if ( $attachment_id && ! FileRepository::exists( $attachment_id ) ) {
 				FileRepository::insert( $attachment_id, $folder_id );
@@ -208,25 +208,6 @@ final class SyncManager {
 		FileRepository::insert( $attachment_id, $folder_id );
 
 		return true;
-	}
-
-	/**
-	 * Find an attachment post ID by its relative upload path.
-	 *
-	 * @return int  0 if not found.
-	 */
-	private function find_attachment_by_path( string $relative ): int {
-		global $wpdb;
-
-		$id = $wpdb->get_var( $wpdb->prepare(
-			"SELECT post_id FROM {$wpdb->postmeta}
-			 WHERE meta_key = '_wp_attached_file'
-			   AND meta_value = %s
-			 LIMIT 1",
-			$relative
-		) );
-
-		return $id ? (int) $id : 0;
 	}
 
 	/**

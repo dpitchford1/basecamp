@@ -1,34 +1,8 @@
-# Plugin Code Review Prompt
+# Plugin Code Review Checklist
 
-A comprehensive, reusable prompt for periodic code reviews of any WordPress plugin built against the Basecamp theme stack. Adapt the plugin-specific sections (namespace map, CPTs, repositories, etc.) to the plugin under review before running.
-
----
-
-## How to Use This
-
-| Approach | Instructions |
-|---|---|
-| **Full review in one pass** | Copy everything between the **Start of Prompt** and **End of Prompt** anchors and paste into Copilot Chat scoped to the repo. |
-| **Iterative by part** | Run Part A (plugin) first, then Part B (theme integration), then Part C (assets), then Part D (hygiene). Keeps responses focused and avoids truncation. |
-| **Iterative by section** | Run individual sections (e.g. "Review A4 — Security across the entire plugin") for targeted deep dives. |
-| **PR review checklist** | Use the section headers as a manual checklist when reviewing any pull request. |
-| **Per-file review** | Prefix with "Review `{file path}` against the following standards:" and paste the relevant sections only. |
+Adapt all `{plugin-slug}`, `{Vendor}`, `{child-theme}`, and namespace map placeholders to the plugin under review before running.
 
 ---
-
-## Severity Legend
-
-| Icon | Meaning |
-|---|---|
-| 🔴 | **Must fix** — violates a documented standard, introduces a bug, or is a security risk |
-| 🟡 | **Should fix** — deviates from convention, may cause confusion or maintenance burden |
-| 🟢 | **Suggestion** — improvement opportunity, not a violation |
-
----
-
-<!-- ============================================================ -->
-<!-- =================== START OF PROMPT ======================== -->
-<!-- ============================================================ -->
 
 **Perform a thorough code review of the `{plugin-slug}` plugin. The following directories are in scope — ignore everything else:**
 
@@ -37,14 +11,6 @@ A comprehensive, reusable prompt for periodic code reviews of any WordPress plug
 /wp-content/themes/{child-theme}/    ← Child theme (Basecamp child)
 /assets/                             ← CSS/JS/fonts/images (if repo root assets exist)
 ```
-
-**Evaluate every file against the project standards documented below. Report findings grouped by category. For each finding include:**
-
-- **Severity:** 🔴 Must fix · 🟡 Should fix · 🟢 Suggestion
-- **File path and line number(s)**
-- **What the issue is**
-- **What the standard requires**
-- **Suggested fix (with code snippet where applicable)**
 
 ---
 
@@ -284,7 +250,3 @@ _(Populate this section with the plugin's documented shortcodes and frontend fea
 
 - Note the current build stage of the plugin before running — early-stage builds may have intentionally stubbed or paused functionality (e.g. payments, frontend JS, custom roles). Do not suggest activating stubbed features unless explicitly requested.
 - The goal is **simple, clean, efficient, understandable code** — flag any over-engineering.
-
-<!-- ============================================================ -->
-<!-- ==================== END OF PROMPT ========================= -->
-<!-- ============================================================ -->

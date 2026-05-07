@@ -31,8 +31,8 @@ class Docs {
 	const SECTIONS = [
 		'content-team' => 'Content Team',
 		'developer'    => 'Developer',
-        'planning'    => 'Planning',
-        'plugin-audit'    => 'Plugin Audit',
+        'project'    => 'Project',
+        //'plugin-audit'    => 'Plugin Audit',
 	];
 
 	// =========================================================================

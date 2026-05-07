@@ -8,14 +8,28 @@
 	'use strict';
 
 	var s  = lib.state;
-	var mm = lib.mm;
+	var mm = lib.mm; 
 
+	/**
+	 * Shorthand i18n lookup delegating to lib.t.
+	 *
+	 * @param  {string} key      i18n key.
+	 * @param  {string} fallback Default text.
+	 * @return {string}
+	 */
 	function t( key, fallback ) { return lib.t( key, fallback ); }
 
 	/* -----------------------------------------------------------------------
 	   Checkbox handling
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Handle a checkbox change event on a file grid item.
+	 * Supports shift-click range selection.
+	 *
+	 * @param  {jQuery.Event} e  The change event.
+	 * @return {void}
+	 */
 	lib.handleCheckboxChange = function ( e ) {
 		var $cb   = $( e.target );
 		var index = parseInt( $cb.data( 'index' ), 10 );
@@ -40,12 +54,24 @@
 		lib.updateBulkToolbar();
 	};
 
+	/**
+	 * Handle a click on a file grid item (excluding checkbox, link, and icon targets).
+	 * Toggles the item's checkbox.
+	 *
+	 * @param  {jQuery.Event} e  The click event.
+	 * @return {void}
+	 */
 	lib.handleItemClick = function ( e ) {
 		if ( $( e.target ).is( 'input, a, img, .dashicons' ) ) { return; }
 		var $cb = $( e.currentTarget ).find( '.mm-file-checkbox' );
 		$cb.prop( 'checked', ! $cb.prop( 'checked' ) ).trigger( 'change' );
 	};
 
+	/**
+	 * Bind the #mm-select-all master checkbox to toggle all file checkboxes.
+	 *
+	 * @return {void}
+	 */
 	lib.initSelectAll = function () {
 		$( document ).on( 'change', '#mm-select-all', function () {
 			var checked = $( this ).prop( 'checked' );
@@ -56,6 +82,12 @@
 		} );
 	};
 
+	/**
+	 * Sync the #mm-select-all checkbox state (checked / indeterminate / unchecked)
+	 * to reflect the current file checkbox selection.
+	 *
+	 * @return {void}
+	 */
 	lib.updateSelectAll = function () {
 		if ( ! s.$selectAll.length ) { return; }
 		var $all     = s.$fileGrid.find( '.mm-file-checkbox' );
@@ -64,6 +96,11 @@
 		s.$selectAll.prop( 'checked', $all.length > 0 && $checked.length === $all.length );
 	};
 
+	/**
+	 * Return the attachment IDs of all currently checked file grid items.
+	 *
+	 * @return {number[]}
+	 */
 	function getSelectedIds() {
 		return s.$fileGrid.find( '.mm-file-checkbox:checked' ).map( function () {
 			return parseInt( $( this ).val(), 10 );
@@ -74,6 +111,11 @@
 	   Bulk toolbar
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Show or hide bulk action controls based on the current selection count.
+	 *
+	 * @return {void}
+	 */
 	lib.updateBulkToolbar = function () {
 		var count = getSelectedIds().length;
 		$( '#mm-selection-count' ).text( count ? count + ' ' + t( 'selected', 'selected' ) : '' );
@@ -87,6 +129,11 @@
 	   Bulk actions
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind bulk delete and bulk move action buttons.
+	 *
+	 * @return {void}
+	 */
 	lib.initBulkActions = function () {
 		$( document ).on( 'click', '#mm-bulk-delete', function () {
 			var ids = getSelectedIds();
@@ -115,6 +162,15 @@
 	   Move (sequential, with collision feedback)
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Move an array of attachment IDs to the given destination folder, one at a time.
+	 * Shows an alert if any moves fail; shows a grid notice if any files were renamed
+	 * to resolve a filename collision.
+	 *
+	 * @param  {number[]} ids           Attachment IDs to move.
+	 * @param  {number}   destFolderId  ID of the destination mm_folder post.
+	 * @return {void}
+	 */
 	function doMove( ids, destFolderId ) {
 		var processed = 0, errors = [], renamed = [];
 
@@ -161,6 +217,12 @@
 	   Bulk Move — folder select helpers
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Walk the live jsTree and populate the bulk-move folder <select> with a
+	 * depth-indented flat list of all real folders.
+	 *
+	 * @return {void}
+	 */
 	lib.flattenTreeForSelect = function () {
 		var inst = s.$tree.jstree( true );
 		if ( ! inst ) { return; }
@@ -169,6 +231,15 @@
 		populateMoveSelect( options );
 	};
 
+	/**
+	 * Recursively traverse a jsTree node and append real folders to the output array.
+	 *
+	 * @param  {object}   inst    jsTree instance.
+	 * @param  {string}   nodeId  jsTree node ID to start from ('#' for root).
+	 * @param  {number}   depth   Current depth level (used for indentation in the select).
+	 * @param  {Array<{id: number, name: string, depth: number}>} out  Accumulator array.
+	 * @return {void}
+	 */
 	function flattenNode( inst, nodeId, depth, out ) {
 		var node = inst.get_node( nodeId );
 		if ( ! node ) { return; }
@@ -184,6 +255,12 @@
 		}
 	}
 
+	/**
+	 * Populate the #mm-bulk-move-folder <select> with depth-indented folder options.
+	 *
+	 * @param  {Array<{id: number, name: string, depth: number}>} options  Flat folder list.
+	 * @return {void}
+	 */
 	function populateMoveSelect( options ) {
 		var $sel = $( '#mm-bulk-move-folder' );
 		if ( ! $sel.length ) { return; }
@@ -199,6 +276,11 @@
 	   Rename
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind rename toolbar button, cancel button, and submit (click + Enter key) handlers.
+	 *
+	 * @return {void}
+	 */
 	lib.initRename = function () {
 		$( document ).on( 'click', '#mm-bulk-rename', function () {
 			var ids = getSelectedIds();
@@ -258,6 +340,12 @@
 	   Drag-and-drop move
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Enable drag-and-drop move from the file grid to jsTree folder nodes.
+	 * Sets draggedIds on dragstart; clears them on dragend.
+	 *
+	 * @return {void}
+	 */
 	lib.initDragDrop = function () {
 		s.$fileGrid.on( 'dragstart', '.mm-file-item', function ( e ) {
 			var id      = parseInt( $( this ).data( 'id' ), 10 );
@@ -275,6 +363,12 @@
 		s.$tree.on( 'ready.jstree refresh.jstree', bindTreeDropTargets );
 	};
 
+	/**
+	 * Attach native dragover/dragleave/drop listeners to each jsTree folder node.
+	 * Called after tree ready and refresh events to rebind newly rendered nodes.
+	 *
+	 * @return {void}
+	 */
 	function bindTreeDropTargets() {
 		$( '#mm-folder-tree li.jstree-node' ).each( function () {
 			var li = this;
@@ -320,6 +414,12 @@
 	   Sync folder
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Bind the Sync Folder button. Scans the active folder for untracked files
+	 * and imports them in chunks.
+	 *
+	 * @return {void}
+	 */
 	lib.initSync = function () {
 		$( document ).on( 'mm:folder-selected', function () {
 			$( '#mm-sync-btn' ).prop( 'disabled', false );
@@ -380,6 +480,12 @@
 	   Upload listener
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Listen for the custom mm:file-uploaded event (fired by the upload zone)
+	 * and prepend the new file to the grid without a full reload.
+	 *
+	 * @return {void}
+	 */
 	lib.initUploadListener = function () {
 		$( document ).on( 'mm:file-uploaded', function ( _e, fileData ) {
 			if ( ! fileData || ! fileData.id ) { return; }
@@ -395,6 +501,13 @@
 	   WP native attachment edit modal
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Intercept clicks on image thumbnails and open the WP native attachment
+	 * edit modal (wp.media frame) instead of navigating to the edit URL.
+	 * Reloads the active folder on modal close to reflect any title changes.
+	 *
+	 * @return {void}
+	 */
 	lib.initAttachmentEdit = function () {
 		if ( typeof wp === 'undefined' || ! wp.media ) { return; }
 

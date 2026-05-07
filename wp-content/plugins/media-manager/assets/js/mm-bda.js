@@ -18,6 +18,11 @@
 	   Protected folders
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch the current list of BDA-protected folders from the server and render the table.
+	 *
+	 * @return {void}
+	 */
 	function loadProtectedFolders() {
 		$.post( mm.url, { action: 'mm_get_protected_files', nonce: mm.nonce }, function ( r ) {
 			if ( ! r.success ) { return; }
@@ -25,6 +30,12 @@
 		} );
 	}
 
+	/**
+	 * Render the protected-folders table rows.
+	 *
+	 * @param  {Array<{folder_id: number, folder_path: string, protected_at: string}>} rows  Folder data from the server.
+	 * @return {void}
+	 */
 	function renderFolderTable( rows ) {
 		var $tbody = $( '#mm-protected-folders tbody' ).empty();
 
@@ -48,12 +59,23 @@
 	   Blocked IPs
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Fetch the current blocked-IP list from the server and render the table.
+	 *
+	 * @return {void}
+	 */
 	function loadBlockedIps() {
 		$.post( mm.url, { action: 'mm_get_blocked_ips', nonce: mm.nonce }, function ( r ) {
 			if ( r.success ) { renderIpTable( r.data ); }
 		} );
 	}
 
+	/**
+	 * Render the blocked-IP table rows.
+	 *
+	 * @param  {Array<{id: number, ip_address: string, created_at: string}>} rows  IP records from the server.
+	 * @return {void}
+	 */
 	function renderIpTable( rows ) {
 		var $tbody = $( '#mm-ip-table tbody' ).empty();
 
@@ -77,6 +99,11 @@
 	   Events
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Attach all event listeners for the Security page.
+	 *
+	 * @return {void}
+	 */
 	function bindEvents() {
 
 		// Remove protected folder.
@@ -121,7 +148,7 @@
 			}, function ( r ) {
 				if ( r.success ) { renderIpTable( r.data ); }
 			} );
-		} );
+		} ); 
 
 		// Save BDA settings form.
 		$( document ).on( 'submit', '#mm-bda-settings-form', function ( e ) {
@@ -132,10 +159,21 @@
 			$.post( mm.url, data, function ( r ) {
 				if ( r.success ) {
 					showNotice( t( 'settings_saved', 'Settings saved.' ), 'success' );
+					$( 'html, body' ).animate( { scrollTop: 0 }, 300 );
 				} else {
 					showNotice( ( r.data && r.data.message ) || t( 'save_error', 'Save failed.' ), 'error' );
 				}
 			} );
+		} );
+
+		// Bottom save button — triggers form submit handler above.
+		$( document ).on( 'click', '#mm-bda-save-btn', function () {
+			$( '#mm-bda-settings-form' ).trigger( 'submit' );
+		} );
+
+		// IP table select-all toggle.
+		$( document ).on( 'change', '#mm-ip-select-all', function () {
+			$( '.mm-ip-check' ).prop( 'checked', $( this ).prop( 'checked' ) );
 		} );
 	}
 
@@ -143,16 +181,36 @@
 	   Utilities
 	----------------------------------------------------------------------- */
 
+	/**
+	 * Prepend a transient notice banner to the BDA page wrap.
+	 *
+	 * @param  {string} message  Text to display.
+	 * @param  {string} type     Notice type: 'success' or 'error'.
+	 * @return {void}
+	 */
 	function showNotice( message, type ) {
 		var $n = $( '<div class="mm-notice mm-notice-' + type + '">' + escHtml( message ) + '</div>' );
 		$( '#mm-bda-wrap' ).prepend( $n );
 		setTimeout( function () { $n.fadeOut( 400, function () { $( this ).remove(); } ); }, 4000 );
 	}
 
+	/**
+	 * Return a translated string, falling back to the provided default.
+	 *
+	 * @param  {string} key      i18n key.
+	 * @param  {string} fallback Default text.
+	 * @return {string}
+	 */
 	function t( key, fallback ) {
 		return ( mm.i18n && mm.i18n[ key ] ) ? mm.i18n[ key ] : fallback;
 	}
 
+	/**
+	 * Escape a value for safe insertion as HTML text content.
+	 *
+	 * @param  {*}      str  Value to escape.
+	 * @return {string}
+	 */
 	function escHtml( str ) {
 		return $( '<span>' ).text( String( str ) ).html();
 	}

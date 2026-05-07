@@ -22,7 +22,7 @@ final class FileHandler {
 	public function upload_file(): void {
 		$this->verify( 'upload_files' );
 
-		$folder_id = isset( $_POST['folder_id'] ) ? (int) $_POST['folder_id'] : 0;
+		$folder_id = isset( $_POST['folder_id'] ) ? (int) wp_unslash( $_POST['folder_id'] ) : 0;
 		if ( ! $folder_id ) {
 			wp_send_json_error( [ 'message' => __( 'No folder specified.', 'media-manager' ) ], 400 );
 		}
@@ -43,8 +43,8 @@ final class FileHandler {
 	public function move_copy_file(): void {
 		$this->verify();
 
-		$attachment_id  = isset( $_POST['attachment_id'] ) ? (int) $_POST['attachment_id'] : 0;
-		$dest_folder_id = isset( $_POST['dest_folder_id'] ) ? (int) $_POST['dest_folder_id'] : 0;
+		$attachment_id  = isset( $_POST['attachment_id'] ) ? (int) wp_unslash( $_POST['attachment_id'] ) : 0;
+		$dest_folder_id = isset( $_POST['dest_folder_id'] ) ? (int) wp_unslash( $_POST['dest_folder_id'] ) : 0;
 		$mode           = isset( $_POST['mode'] ) && 'copy' === sanitize_key( $_POST['mode'] ) ? 'copy' : 'move';
 
 		if ( ! $attachment_id || ! $dest_folder_id ) {
@@ -78,7 +78,7 @@ final class FileHandler {
 	public function rename_file(): void {
 		$this->verify();
 
-		$attachment_id = isset( $_POST['attachment_id'] ) ? (int) $_POST['attachment_id'] : 0;
+		$attachment_id = isset( $_POST['attachment_id'] ) ? (int) wp_unslash( $_POST['attachment_id'] ) : 0;
 		$new_name      = isset( $_POST['new_name'] )
 			? sanitize_file_name( wp_unslash( $_POST['new_name'] ) )
 			: '';

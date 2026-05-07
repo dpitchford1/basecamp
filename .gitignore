@@ -36,6 +36,7 @@ wp-config.php
 /wp-content/themes/basecamp/inc/admin/assets/
 /_old-dish-files/
 /assets/_archive/
+/_docs-archive/
 
 #/wp-content/themes/basecamp/templates/
 /wp-content/themes/basecamp/inc/*archive/
@@ -49,6 +50,8 @@ wp-config.php
 /wp-content/plugins/contact-form-7-honeypot/
 /wp-content/plugins/menus/
 /wp-content/plugins/wp-sweep/
+/wp-content/plugins/index-wp-mysql-for-speed/
+/wp-content/plugins/wp-import-export-lite/
 
 # Personal plugins
 /wp-content/plugins/dev-maintenance/
